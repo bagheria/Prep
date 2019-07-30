@@ -5,79 +5,33 @@ library(tidyverse)
 
 ### Scripts:
 source("rm_tracing_dot.R")
-
-### Functions
-
-# Function to match expansion with abbreviation
-expand_abb <- function(word, abb_df) {
-  # Check every record in the abbreviation list
-  for (i in seq_len(nrow(abb_df))) {
-    # If the abbreviation in abbreviation list matches the token from patientrecord:
-    if (word == abb_df$abb_cor[i]) {
-      # return the the abbreviation's expansion
-      result = abb_df$expansion[i]
-      return(result)
-    }
-  }
-  # If no match in the abbreviation list, return the original word
-  result = word
-  return(result)
-}
-
-# Function to replace abbreviations in token filled dataframe
-replace_abb <- function(token_df, abb_df) {
-  new_df <- token_df
-  for (i in seq_len(nrow(token_df))) {
-    word = token_df$word[i]
-    replacement <- expand_abb(word, abb_df)
-    new_df$word[i] <- replacement
-  }
-  return(new_df)
-}
-
-# Function to keep token filled dataframe, and add abbreviation expansion information
-add_expansion <- function(token_df, abb_df) {
-  
-  # Copy dataframe to new dataframe which will be function's output
-  new_df <- token_df %>% mutate(expansion = NA, abb_cor = NA, converted = NA)
-  # Loop through every token generated from patient's token_df
-  for (i in seq_len(nrow(token_df))) {
-    word = token_df$word[i]
-    
-    # Get token's expansion, if token is no abbreviation, token itself will be returned
-    expansion <- expand_abb(word, abb_df)
-    
-    if (expansion != word) {
-      new_df$expansion[i] <- expansion
-      new_df$abb_cor[i] <- word
-      new_df$converted[i] <- TRUE
-    }
-    else {
-      new_df$expansion[i] <- word
-      new_df$abb_cor[i] <- NA
-      new_df$converted[i] <- FALSE
-    }
-  }
-  new_df <- left_join(new_df, abb_df)
-  return(new_df)
-}
+source("replace_ab_in_text.R")
+source("abb_df_functions.R")
 
 ### Import files
-records_orig <- read_excel("data/test_record1.xlsx")
+# Import patien records
+pat_records_orig <- read_excel("data/test_record1.xlsx")
 
+# Import abbreviation list
 abbs <- read_excel("data/Abbreviations list.xlsx") %>% 
   select(1:4) 
 colnames(abbs) <- c("abbreviation", "expansion", "explanation", "extra")
-# Remove all rows in which the abbreviation has no expansion yet
+# Rows without a filled in expansion will not be used
 abbs <- abbs[!is.na(abbs$expansion), ]
 
+# Transform text into a dataframe with tokens per word
+pat_records <- pat_records_orig %>% unnest_tokens(word, text)  #to_lower = False, can be used to keep capitalization
 
-# transform text into a dataframe with tokens per word
-records <- records_orig %>% unnest_tokens(word, text)  #to_lower = False, can be used to keep capitalization
-
+# Creates a column with abbreviations where tracing '.' are removed.
+# Necessary since tracing dots were stripped from tokens (words) in unnest_token() function
 abbs <- replace_tracing_dot(abbs)
 
-df1 <- replace_abb(records, abbs)
+# # Creates a dataframe with recordnumber and expanded tokens
+# df1 <- replace_abb(pat_records, abbs)
 
-df2 <- add_expansion(records, abbs)
+# Creates a dataframe which gives overview of tokens, abbreviations and their expansions
+df2 <- add_expansion(pat_records, abbs)
+
+# Replaces abbreviations that have been recognized with their expansions in the original patient records
+pat_recrods_exp <- expand_text(pat_records = pat_records_orig, abb_df = df2)
 

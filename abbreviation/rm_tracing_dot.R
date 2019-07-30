@@ -1,6 +1,7 @@
-# Function to replace abbreviation with tracing dots in string
-# Necessary since 'unnest_token()' will strip tracing dots, 
-# which makes matching of tokens to abbreviations impossible otherwise.
+### Creates a new column in the abbreviation dataframe; 'abb_cor'
+### This column coppies the abbreviations but strips them from a tracing '.'
+
+# Sub function to actually remove the '.' from the string.
 rm_tracing_dot <- function(x){
   string <- x
   # Regex: matches entire string which ends with a '.'
@@ -11,6 +12,9 @@ rm_tracing_dot <- function(x){
   return(result)
 }
 
+# Function to replace abbreviation with tracing dots in string
+# Necessary since 'unnest_token()' will strip tracing dots, 
+# which makes matching of tokens to abbreviations impossible otherwise.
 replace_tracing_dot <- function(abb_df) {
   # Initialize counter to keep track of number of changes
   counter <- 0
