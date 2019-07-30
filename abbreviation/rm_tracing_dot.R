@@ -19,6 +19,7 @@ replace_tracing_dot <- function(abb_df) {
   # Initialize counter to keep track of number of changes
   counter <- 0
   new_df <- abb_df
+  new_df$abb_cor <- NA
   cat("\nReplacement of tracing '.' in abbreviations dataframa has been initiated: \n\n")
   for (i in seq_len(nrow(abb_df))) {
     abb <- abb_df$abbreviation[i]
