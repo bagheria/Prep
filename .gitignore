@@ -1,5 +1,8 @@
-# Output folder
-abbreviation/output
+# Output folders
+*/output
+
+# Data folders
+*/data
 
 # History files
 .Rhistory
