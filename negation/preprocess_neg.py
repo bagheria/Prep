@@ -18,3 +18,7 @@ def import_excel(filename):
     filepath = Path.cwd() / "negation" / "data" / filename
     df = pd.read_excel(filepath)
     return(df)
+
+
+test_df = import_excel("test_data1.xlsx")
+print(test_df)

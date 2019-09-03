@@ -5,6 +5,7 @@ from textblob import TextBlob
 import pyConTextNLP.display.html as html
 from IPython.display import display, HTML
 from negation.preprocess_neg import import_excel
+from pathlib import Path
 
 test_df = import_excel("test_data1.xlsx")
 
@@ -69,3 +70,9 @@ clrs = {
 display(HTML(html.mark_document_with_html(context, colors=clrs,
         default_color="black")))
 print(context.getXML())
+
+context_result = context.getXML()
+with open(Path.cwd() / "negation" / "output" / "context_object.xml", "w") as f:
+    f.write(context_result)
+
+test_dict = {1 : context_result, 2 : context}
