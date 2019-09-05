@@ -20,5 +20,5 @@ def import_excel(filename):
     return(df)
 
 
-test_df = import_excel("test_data1.xlsx")
-print(test_df)
+# test_df = import_excel("test_data1.xlsx")
+# print(test_df)
