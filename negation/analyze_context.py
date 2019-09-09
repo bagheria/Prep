@@ -1,8 +1,11 @@
+# %%
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import pandas as pd
 
 
+# %%
+# Imports context document from XML file
 def import_context(filename):
     filepath = Path.cwd() / "negation" / "output" / filename
     with open(filepath, "r") as file:
@@ -10,7 +13,11 @@ def import_context(filename):
         return(content)
 
 
+# %%
 def context_df_file(filename, record):
+    """
+    Transforms single context document record to pandas dataframe
+    """
     filepath = Path.cwd() / "negation" / "output" / filename
     tree = ET.parse(filepath)
     root = tree.getroot()
@@ -34,6 +41,7 @@ def context_df_file(filename, record):
     return(df)
 
 
+# %%
 def context_df_dict(dict):
     """ Converts dictionary with context objects as values to
     dataframe containing all modifications on the targets
@@ -48,7 +56,7 @@ def context_df_dict(dict):
 
         # uses additional xml initialization,
         # because fromstring() doesnt return an ElementTree
-        tree = ET.ElementTree(ET.fromstring(dict[key]))
+        tree = ET.ElementTree(ET.fromstring(dict[key]["xml"]))
         root = tree.getroot()
 
         # Collect information about all targets
@@ -65,12 +73,13 @@ def context_df_dict(dict):
     return(df)
 
 
+# %%
 # Import single record from file:
 output = context_df_file("context_output1.xml", 1)
 # Import multiple records from dictionary (apply_context.py)
 output2 = context_df_dict(output_dict1)
 
-
+# %%
 # # To show the root tag:
 # root.tag
 # # Shows root attributes:
@@ -126,3 +135,6 @@ output2 = context_df_dict(output_dict1)
 #             for target in cat.findall("../")
 #     # for type in node.findall("./tagObject/category"):
 #     #     print("Type:", type.text)
+
+
+# %%
