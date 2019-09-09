@@ -1,9 +1,21 @@
-### Libraries
+---
+title: "Walkthrough1"
+author: "Martijn Sturm"
+date: "9 september 2019"
+output: 
+  html_document:
+    df_print: paged
+    fig_height: 6
+    fig_width: 3
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 library(tidytext)
 library(tidyverse)
 library(xlsx)
-
 
 # Import abbreviation list
 import_abbs <- function(filename) {
@@ -184,37 +196,88 @@ expand_text <- function(pat_records, token_df) {
   cat("\nAbbreviation replacement has been completed.\n")
   return(pat_records)
 }
+```
 
+## Abbreviation module
+In this module we try to replace abbreviations in patient records  
 
+1. Patient records and the abbreviation list are read from excel files into R dataframes
+2. Each patient record will be split up into words. This is called tokenization.
+3. Modification of abbreviations. Trailing dots need to be removed from the abbreviations
+4. Scan patient records for abbreviations in abbreviation list
+5. Expand the abbreviations in-text
+6. Export results
+
+### Import data and abbreviations
+```{r}
 # Import patient records
-pat_records_orig <- read_excel("data/test_data2.xlsx") %>% na.omit() # %>% filter(record == 490)
+pat_records_orig <- read_excel("data/test_data2.xlsx") %>% na.omit()
+# Display head
+head(pat_records_orig)
+```
 
+The function to import abbreviations removes rows which have an empty cell in the 'expansion' column.
+```{r}
 # Import abbreviation list
 abb_df <- import_abbs("abb1.xlsx")
+head(abb_df)
+```
 
+### Tokenization of patient records
+Tokenizer:  
+
+* Lowers tokens (no capitals anymore)
+* Removes trailing dots ('.') at end of words, assuming those are full stops for sentences
+
+```{r}
 # Transform text into a dataframe with tokens per word
 token_df <- pat_records_orig %>% unnest_tokens(word, text) #to_lower = False, can be used to keep capitalization
+token_df
+```
 
-# pat_records[unique(unlist(lapply(pat_records, function(x) which(is.na(x))))), 1]
-# pat_records <- pat_records %>% na.omit()
 
-# Creates a column with abbreviations where trailing '.' are removed.
-# Necessary since trailing dots were stripped from tokens (words) in unnest_token() function
+### Remove trailing dots from abbreviations
+Since the tokenizer gets rid of trailing dots on the tokens, abbreviations that end with a dot won't be recognized.
+Therefore, the trailing dots need to be removed from the abbreviations in the abbreviation list.
+
+```{r}
 abb_df <- replace_trailing_dot(abb_df)
+abb_df
+```
 
-# # Creates a dataframe with recordnumber and expanded tokens
-# df1 <- replace_abb(pat_records, abbs)
+### Scan for abbreviations in records (add_expansion())
+This function loops through the tokenized patient records to check if the token matches one of the abbreviations.
+It returns a dataframe based on the token_df above. But now information is added whether each token is recognized as abbreviation, and which expansion corresponds to it.  
 
-# Creates a dataframe which gives overview of tokens, abbreviations and their expansions for curent dataset
+```{r}
 token_df <- add_expansion(token_df, abb_df)
+token_df
+```
 
-# Replaces abbreviations that have been recognized with their expansions in the original patient records
+This Dataframe will be used to replace the abbreviations in-text in the patient records
+
+### Expand abbreviations in text (expand_text())
+This function uses Regex to replace the abbreviations identified upstream, by their replacements
+
+```{r}
 pat_records_exp <- expand_text(pat_records = pat_records_orig, token_df = token_df)
+pat_records_exp
+```
 
+### Export to Excel
+Files can be exported to Excel to be made accessible for others.
+Or to use it as input for another downstream task in Python.
+
+```{r}
 # Writes token dataframe to an excel file in the output folder
 token_df %>% filter(converted == TRUE) %>% as.data.frame() %>%
   write.xlsx(file = "output/attempt1_abbs.xlsx", col.names = T, row.names = F)
+```
 
+
+```{r}
 # Writes adjusted patient records to an excel file in the output folder
 pat_records_exp %>% as.data.frame() %>%
   write.xlsx(file = "output/attempt1_pat_records.xlsx", col.names = T, row.names = F)
+```
+
