@@ -5,13 +5,7 @@ from textblob import TextBlob
 # import networkx as nx
 # import pyConTextNLP.display.html as html
 # from IPython.display import display, HTML
-from negation.preprocess_neg import import_excel
 from pathlib import Path
-
-# %%
-# Declaration of paths to modifier and target data:
-modifier_path = "https://raw.githubusercontent.com/chapmanbe/pyConTextNLP/master/KB/lexical_kb_05042016.yml"
-target_path = "https://raw.githubusercontent.com/chapmanbe/pyConTextNLP/master/KB/utah_crit.yml"
 
 
 # %%
@@ -69,7 +63,7 @@ def markup_record(record_text, record_nr, modifiers, targets, output_dict):
 
 
 # %%
-def apply_context(input_context=input_file, modifier_path=modifier_path, target_path=target_path):
+def apply_context(input_context, modifier_path, target_path):
     """
     Function that applies context algorithm on patient records input.
     Returns dictionary:
@@ -80,7 +74,8 @@ def apply_context(input_context=input_file, modifier_path=modifier_path, target_
         }
     }
     """
-    print("\nNumber of patient records that will be processed:", len(input_context.index))
+    print("\nNumber of patient records that will be processed:",
+          len(input_context.index))
 
     # Obtain itemdata
     modifiers = itemData.get_items(modifier_path)
@@ -110,10 +105,6 @@ def export_context(output_dict, filename, record_nr):
 
 
 # %%
-input_file = import_excel("test_data1.xlsx")
-# %%
-output_dict1 = apply_context()
-export_context(output_dict=output_dict1, filename="context_output1.xml", record_nr=2)
 
 # import pyConTextNLP.utils as contextUtils
 # contextUtils.get_section_markups(output_dict1[1]["object"])

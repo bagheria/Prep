@@ -2,6 +2,7 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import pandas as pd
+# from negation.preprocess_neg import export_excel
 
 
 # %%
@@ -22,7 +23,7 @@ def context_df_file(filename, record):
     tree = ET.parse(filepath)
     root = tree.getroot()
 
-    columns = ["record", "phrase", "literal", "modifier"]
+    columns = ["record", "phrase", "literal", "category", "modifier"]
     index = []
     df = pd.DataFrame(index=index, columns=columns)
     i = 0
@@ -33,10 +34,13 @@ def context_df_file(filename, record):
         if cat == "target":
             phrase = str.strip(node.find(".//phrase").text)
             lit = str.strip(node.find(".//literal").text)
+            cat = str.strip(node.find(".//category").text)
+            # For every target, multiple modifiers can be identified:
             for mod in node.findall(".//modifyingCategory"):
                 modifier = str.strip(mod.text)
                 # Add every modification of a target as a row to df
-                df.loc[i] = pd.Series({"phrase": phrase, "literal": lit, "modifier": modifier})
+                df.loc[i] = pd.Series({"phrase": phrase, "literal": lit,
+                                       "category": cat, "modifier": modifier})
                 i = i + 1
     return(df)
 
@@ -47,7 +51,7 @@ def context_df_dict(dict):
     dataframe containing all modifications on the targets
     """
 
-    columns = ["record", "phrase", "literal", "modifier"]
+    columns = ["record", "phrase", "literal", "category", "modifier"]
     index = []
     df = pd.DataFrame(index=index, columns=columns)
     i = 0
@@ -65,19 +69,18 @@ def context_df_dict(dict):
             if cat == "target":
                 phrase = str.strip(node.find(".//phrase").text)
                 lit = str.strip(node.find(".//literal").text)
+                cat = str.strip(node.find(".//tagObject/category").text)
                 for mod in node.findall(".//modifyingCategory"):
                     modifier = str.strip(mod.text)
                     # Add every modification of a target as a row to df
-                    df.loc[i] = pd.Series({"record": key, "phrase": phrase, "literal": lit, "modifier": modifier})
+                    df.loc[i] = pd.Series({"record": key, "phrase": phrase,
+                                           "literal": lit, "category": cat,
+                                           "modifier": modifier})
                     i = i + 1
     return(df)
 
 
-# %%
-# Import single record from file:
-output = context_df_file("context_output1.xml", 1)
-# Import multiple records from dictionary (apply_context.py)
-output2 = context_df_dict(output_dict1)
+
 
 # %%
 # # To show the root tag:

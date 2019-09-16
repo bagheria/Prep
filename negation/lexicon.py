@@ -1,8 +1,25 @@
 # %%
 import pandas as pd
 from pathlib import Path
-# import yaml
-from negation.preprocess_neg import import_excel
+import yaml
+
+
+# %%
+def yaml_to_panda(filename):
+    """Converts a yaml context lexicon to a pandas dataframe
+    """
+    filepath = Path.cwd() / "negation" / "data" / filename
+    with open(filepath) as file:
+        yaml_file = yaml.load_all(file, Loader=yaml.SafeLoader)
+        i = 0
+        for doc in yaml_file:
+            if i == 0:
+                yaml_panda = pd.DataFrame(data=doc, index=[i])
+            else:
+                new_row = pd.DataFrame(data=doc, index=[i])
+                yaml_panda = pd.concat([yaml_panda, new_row])
+            i = i + 1
+    return(yaml_panda)
 
 
 # %%
@@ -42,18 +59,20 @@ def gen_regex(df):
     columns = []
     for column in df.columns:
         columns.append(column)
-    # Remove first string, because this is the literal, no synonym
-    del(columns[0])
+    # Remove category and literal, because these don't contain synonyms
+    columns.remove("category")
+    columns.remove("literal")
 
     # Initialize new DataFrame to store new values:
     # Two columns: literal and  regex
-    new_df = pd.DataFrame(columns=["literal", "regex"])
+    new_df = pd.DataFrame(columns=["category", "literal", "regex"])
     new_df_index = 0
 
     # Generate the regex and literal strings per row of the input df
     for row_index in df.index:
         # Literal can be copied directly
-        lit = df.iat[row_index, 0]
+        lit = df.at[row_index, "literal"]
+        cat = df.at[row_index, "category"]
 
         synonyms = []
         # Synonyms extracted from the columns
@@ -82,22 +101,7 @@ def gen_regex(df):
 
             regex = regex + addition
         # Add values to new row in df
-        new_df.loc[new_df_index] = pd.Series({"literal": lit, "regex": regex})
+        new_df.loc[new_df_index] = \
+            pd.Series({"category": cat, "literal": lit, "regex": regex})
         new_df_index += 1
     return(new_df)
-
-
-# %%
-raw_targets = import_excel("target_test1.xlsx")
-regex_df = gen_regex(raw_targets)
-print(regex_df)
-
-# # %%
-# # nl_mod comes from lexicon_to_df.py
-# obj_input = nl_mod
-# # replace all empty values with NaN
-# obj_input = obj_input.replace("", np.nan, regex=False)
-
-# panda_to_yaml("output.yml", obj_input)
-
-# %%

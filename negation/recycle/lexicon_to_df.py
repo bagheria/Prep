@@ -21,16 +21,3 @@ def yaml_to_panda(filename):
 
 
 # %%
-nl_mod = yaml_to_panda("lexical_kb_05042016_nl.yml")
-print("Types of modifiers for nl_mod lexicon:")
-categories = nl_mod.Type.value_counts()
-print(categories)
-# pd.DataFrame.to_clipboard(categories)
-# %%
-en_mod = yaml_to_panda("en_lex.yml")
-print("Types of modifiers for en_mod lexicon:")
-categories = en_mod.Type.value_counts()
-print(categories)
-pd.DataFrame.to_clipboard(categories)
-
-# %%

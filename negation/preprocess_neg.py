@@ -1,19 +1,26 @@
 import pandas as pd
 from pathlib import Path
 
-# filename = "test_data1.xlsx"
 
-# print("Current working directory:", Path.cwd())
-
-# filepath = Path.cwd() / "negation" / "data" / filename
-# print(filepath)
-# df = pd.read_excel(filepath)
-# print(df)
-
-# test_record = df.tekst[0]
-# print(test_record)
+def get_path(filename):
+    """
+    Takes a filename as input (string). Returns path to file.
+    """
+    filepath = Path.cwd() / "negation" / "data" / filename
+    return(filepath)
 
 
+def get_path_context(filename):
+    """
+    Takes a filename as input (string).
+    Returns path to file. Path is preceded by "file:\\"
+    """
+    filepath = Path.cwd() / "negation" / "data" / filename
+    filepath = "file:\\" + str(filepath)
+    return(filepath)
+
+
+# %%
 def import_excel(filename):
     """
     Takes a filename as input (string). Imports it from 'negation/data' folder.
@@ -23,5 +30,8 @@ def import_excel(filename):
     return(df)
 
 
-# test_df = import_excel("test_data1.xlsx")
-# print(test_df)
+# %%
+def export_excel(df, filename):
+    filepath = Path.cwd() / "negation" / "output" / filename
+    df.to_excel(filepath, index=False)
+    print(f"Excel file '{filename}' was created in {filepath}")
