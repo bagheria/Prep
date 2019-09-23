@@ -50,8 +50,8 @@ def markup_record(record_text, record_nr, modifiers, targets, output_dict):
     print("\nFor record number:", record_nr)
     print("Number of sentences that have been marked up:", count)
 
-    # print("\nMarkup result:")
-    # print(markup_result)
+    print("\nMarkup result:")
+    print(markup_result)
 
     # Add sentence markup to contextDocument
     for sentence_markup in markup_result:
@@ -90,12 +90,18 @@ def apply_context(input_context, modifier_path, target_path):
     for record_index in input_context.index:
         record_text = input_context.at[record_index, "text"]
         record_nr = input_context.at[record_index, "record"]
-        # Apply context
-        output_dict = markup_record(record_text, record_nr,
-                                    modifiers, targets, output_dict)
-
+    
+        # check if record is string, otherwise skip markup for record
+        if isinstance(record_text, str):
+            # Apply context
+            output_dict = \
+                markup_record(record_text, record_nr,
+                              modifiers, targets, output_dict)
+        else:
+            print(f"\nRecord number {record_nr} is no string. This record is skipped.")
+        print(f"Output dict after record: {record_nr}\n{output_dict}")
     n_objects = len(output_dict)
-    print(f"\nOutput object contains {n_objects} context objects")
+    print(f"\nOutput object contains {n_objects} context objects\n")
     return(output_dict)
 
 
@@ -170,16 +176,34 @@ def context_df_dict(dict):
         # Collect information about all targets
         for node in root.findall(".//node"):
             cat = str.strip(node.find("./category").text)
+            # print(f"cat: {cat}\n")
             if cat == "target":
                 phrase = str.strip(node.find(".//phrase").text)
                 lit = str.strip(node.find(".//literal").text)
                 cat = str.strip(node.find(".//tagObject/category").text)
-                for mod in node.findall(".//modifyingCategory"):
-                    modifier = str.strip(mod.text)
-                    # Add every modification of a target as a row to df
+                # print(f"phrase: {phrase}, literal: {lit}, cat: {cat}\n")
+                # print(type(node.findall(".//modifyingCategory")))
+                
+                # If the modifiers have been identified for current target:
+                # Make a row in output dataframe for every modifier
+                if len(node.findall(".//modifyingCategory")) > 0:
+                    
+                    for mod in node.findall(".//modifyingCategory"):
+                        # print(mod)
+                        modifier = str.strip(mod.text)
+                        # print(f"modifier: {modifier}\n")
+                        # Add every modification of a target as a row to df
+                        df.loc[i] = pd.Series({"record": key, "phrase": phrase,
+                                            "literal": lit, "category": cat,
+                                            "modifier": modifier})
+                        i = i + 1
+                
+                # If no modifiers for current target:
+                # Leave "modifier" column empty
+                else:
                     df.loc[i] = pd.Series({"record": key, "phrase": phrase,
-                                           "literal": lit, "category": cat,
-                                           "modifier": modifier})
+                                        "literal": lit, "category": cat,
+                                        "modifier": ""})
                     i = i + 1
     return(df)
 
