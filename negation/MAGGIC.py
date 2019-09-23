@@ -30,9 +30,11 @@ sbp_regex2 = \
 
 # Add SBP row to MAGGIC dataframe:
 maggic2.loc[len(maggic2.index)] = \
-    pd.Series({"Type": "sbp1", "Lex": "sbp", "Regex": sbp_regex1})
+    pd.Series({"Type": "sbp", "Lex": "Systolic Blood Pressure 1",
+              "Regex": sbp_regex1})
 maggic2.loc[len(maggic2.index)] = \
-    pd.Series({"Type": "sbp2", "Lex": "sbp", "Regex": sbp_regex2})
+    pd.Series({"Type": "sbp", "Lex": "Systolic Blood Pressure 2",
+              "Regex": sbp_regex2})
 
 # %% Variable Ejection Fraction
 
@@ -67,9 +69,11 @@ vef_regex2 = \
 
 # Add VEF row to MAGGIC dataframe
 maggic2.loc[len(maggic2.index)] = \
-    pd.Series({"Type": "vef1", "Lex": "vef", "Regex": vef_regex1})
+    pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction 1",
+              "Regex": vef_regex1})
 maggic2.loc[len(maggic2.index)] = \
-    pd.Series({"Type": "vef2", "Lex": "vef", "Regex": vef_regex2})
+    pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction 2",
+              "Regex": vef_regex2})
 
 # %% Add column with calc = "MAGGIC"
 # maggic2["calc"] = "MAGGIC"
