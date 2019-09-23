@@ -33,8 +33,18 @@ def panda_to_yaml(filename, obj_input):
     open(filepath, "w")
 
     with open(filepath, "a") as stream:
+        # initialize i, to skip yaml document seperator for first row
+        i = True
         # Each row represents one document in the yaml file
         for row_index in obj_input.index:
+            # If not first row in file writing:
+            if i == False:
+                # Add yaml document separator followed by "\n"
+                stream.write("---\n")
+            # If first row for file writing:
+            if i == True:
+                # Skip yaml doc seperator and reset i
+                i = False
             # Each column represents one object per document in yaml file
             for col in obj_input.columns:
                 # Value corresponding to curent document and object
@@ -45,8 +55,7 @@ def panda_to_yaml(filename, obj_input):
 
                 else:
                     stream.write("{}: {}\n".format(col, value))
-            # Add yaml document separator followed by "\n"
-            stream.write("---\n")
+            
 
 
 # %%
@@ -65,7 +74,7 @@ def gen_regex(df):
 
     # Initialize new DataFrame to store new values:
     # Two columns: literal and  regex
-    new_df = pd.DataFrame(columns=["category", "literal", "regex"])
+    new_df = pd.DataFrame(columns=["Type", "Lex", "Regex"])
     new_df_index = 0
 
     # Generate the regex and literal strings per row of the input df
@@ -102,6 +111,6 @@ def gen_regex(df):
             regex = regex + addition
         # Add values to new row in df
         new_df.loc[new_df_index] = \
-            pd.Series({"category": cat, "literal": lit, "regex": regex})
+            pd.Series({"Type": cat, "Lex": lit, "Regex": regex})
         new_df_index += 1
     return(new_df)
