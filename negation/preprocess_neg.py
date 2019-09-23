@@ -30,6 +30,15 @@ def import_excel(filename):
     return(df)
 
 
+def import_excel2(folder, filename):
+    """
+    Takes a filename as input (string). Imports it from 'negation/data' folder.
+    """
+    filepath = Path.cwd() / "negation" / folder / filename
+    df = pd.read_excel(filepath)
+    return(df)
+
+
 # %%
 def export_excel(df, filename):
     filepath = Path.cwd() / "negation" / "output" / filename

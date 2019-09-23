@@ -194,16 +194,17 @@ def context_df_dict(dict):
                         # print(f"modifier: {modifier}\n")
                         # Add every modification of a target as a row to df
                         df.loc[i] = pd.Series({"record": key, "phrase": phrase,
-                                            "literal": lit, "category": cat,
-                                            "modifier": modifier})
+                                              "literal": lit, "category": cat,
+                                               "modifier": modifier})
                         i = i + 1
                 
                 # If no modifiers for current target:
                 # Leave "modifier" column empty
                 else:
-                    df.loc[i] = pd.Series({"record": key, "phrase": phrase,
-                                        "literal": lit, "category": cat,
-                                        "modifier": ""})
+                    df.loc[i] = \
+                        pd.Series({"record": key, "phrase": phrase,
+                                  "literal": lit,
+                                   "category": cat, "modifier": None})
                     i = i + 1
     return(df)
 
