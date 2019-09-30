@@ -23,13 +23,12 @@ def yaml_to_panda(filename):
 
 
 # %%
-def panda_to_yaml(filename, obj_input):
+def panda_to_yaml(filepath, obj_input):
     """Converts and exports a panda dataframe lexicon into a yaml file.
     This can be used by pyContextNLP.
-    Use filename with .yml extension"""
+    """
 
-    filepath = Path.cwd() / "negation" / "output" / filename
-
+    # Create file to write  to
     open(filepath, "w")
 
     with open(filepath, "a") as stream:
@@ -38,11 +37,11 @@ def panda_to_yaml(filename, obj_input):
         # Each row represents one document in the yaml file
         for row_index in obj_input.index:
             # If not first row in file writing:
-            if i == False:
+            if not i:
                 # Add yaml document separator followed by "\n"
                 stream.write("---\n")
             # If first row for file writing:
-            if i == True:
+            if i:
                 # Skip yaml doc seperator and reset i
                 i = False
             # Each column represents one object per document in yaml file
@@ -55,7 +54,6 @@ def panda_to_yaml(filename, obj_input):
 
                 else:
                     stream.write("{}: {}\n".format(col, value))
-            
 
 
 # %%

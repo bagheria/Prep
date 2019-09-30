@@ -1,21 +1,23 @@
 import pandas as pd
-from pathlib import Path
+from pathlib import Path, PurePath
 
 
-def get_path(filename):
+# %%
+def get_path(*folders, filename):
     """
     Takes a filename as input (string). Returns path to file.
     """
-    filepath = Path.cwd() / "negation" / "data" / filename
+    filepath = PurePath(Path.cwd()).joinpath(*folders, filename)
     return(filepath)
 
 
+# %%
 def get_path_context(filename):
     """
     Takes a filename as input (string).
     Returns path to file. Path is preceded by "file:\\"
     """
-    filepath = Path.cwd() / "negation" / "data" / filename
+    filepath = Path.cwd() / "negation" / "KB" / "lexicon" / filename
     filepath = "file:\\" + str(filepath)
     return(filepath)
 
@@ -30,11 +32,19 @@ def import_excel(filename):
     return(df)
 
 
-def import_excel2(folder, filename):
+def import_vars(filename):
     """
     Takes a filename as input (string). Imports it from 'negation/data' folder.
     """
-    filepath = Path.cwd() / "negation" / folder / filename
+    filepath = Path.cwd() / "negation" / "kb" / filename
+    df = pd.read_excel(filepath)
+    return(df)
+
+
+def import_excel2(filepath):
+    """
+    Takes a filepath as input (use get_path()).
+    """
     df = pd.read_excel(filepath)
     return(df)
 

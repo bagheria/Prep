@@ -125,7 +125,7 @@ def import_context(filename):
 
 
 # %%
-def context_df_file(filename, record):
+def file_to_df(filename, record):
     """
     Transforms single context document record to pandas dataframe
     """
@@ -156,7 +156,7 @@ def context_df_file(filename, record):
 
 
 # %%
-def context_df_dict(dict):
+def dict_to_df(dict):
     """ Converts dictionary with context objects as values to
     dataframe containing all modifications on the targets
     """
@@ -183,11 +183,11 @@ def context_df_dict(dict):
                 cat = str.strip(node.find(".//tagObject/category").text)
                 # print(f"phrase: {phrase}, literal: {lit}, cat: {cat}\n")
                 # print(type(node.findall(".//modifyingCategory")))
-                
+
                 # If the modifiers have been identified for current target:
                 # Make a row in output dataframe for every modifier
                 if len(node.findall(".//modifyingCategory")) > 0:
-                    
+
                     for mod in node.findall(".//modifyingCategory"):
                         # print(mod)
                         modifier = str.strip(mod.text)
@@ -197,7 +197,7 @@ def context_df_dict(dict):
                                               "literal": lit, "category": cat,
                                                "modifier": modifier})
                         i = i + 1
-                
+
                 # If no modifiers for current target:
                 # Leave "modifier" column empty
                 else:

@@ -1,9 +1,8 @@
 # %% Imports:
-from negation import preprocess_neg
+# from negation import preprocess_neg
 import pandas as pd
 import re
 import collections
-
 
 
 def join_maggic(mag_var_df, context_df):
@@ -12,7 +11,7 @@ def join_maggic(mag_var_df, context_df):
         replacement = context_df.at[i, "category"]
         replacement = replacement.strip("'][")
         context_df.at[i, "variable"] = replacement
-
+    context_df = context_df.drop(columns=["category"])
     # %% Join context df and MAGGIC variable df
     df = pd.merge(mag_var_df, context_df, on='variable', how="right")
     return(df)
@@ -27,7 +26,7 @@ def get_vef_output(df):
             string = df.at[row, "phrase"]
             # Regex pattern to get value
             value = re.search(r"\d+", string).group()
-            print(type(value))
+            # print(type(value))
             new_df.at[row, "value"] = value
 
     return(new_df)
@@ -43,7 +42,7 @@ def get_sbp_output(df):
             # Regex pattern to get value
             pattern = r"(\d{2,3}(?=/\d{2,3}))"
             value = re.search(pattern, string).group()
-            print(type(value))
+            # print(type(value))
             new_df.at[row, "value"] = value
 
     return(new_df)
@@ -56,8 +55,11 @@ def get_bin_output(df):
     for row in rows:
         if (df.at[row, "type"]) == "binary":
             mod = df.at[row, "modifier"]
+            print(mod, type(mod))
+            if isinstance(mod, str):
 
-            new_df.at[row, "value"] = mod
+
+            # new_df.at[row, "neg"] = mod
 
     return(new_df)
 # %% Extract factor values
@@ -67,13 +69,6 @@ def get_bin_output(df):
 
 
 # %% Risk calculation
-
-def get_values(df):
-    df = get_vef_output(df)
-    df = get_sbp_output(df)
-
-    return(df)
-
 
 def get_risk(df):
     # Get list of record numbers
@@ -111,15 +106,212 @@ def calc_risk_score(df):
         else:
             print("Multiple options for VEF value in:\n", df)
 
-
-
-
     return(value)
 
 
+# Function to check if the extracted variables are within the defined
+# possible ranges
+def MAGGIC_var_range(vef, age, sbp, bmi, creatinine, nyha, male, smoke, diabetes, 
+                     copd, heart_fail_diag, betablock, acei_arb):
+    return()
+
+
+def calc_maggic_risk(vef, age, sbp, bmi, creatinine, nyha, male, smoke,
+                     diabetes, copd, heart_fail_diag, betablock, acei_arb):
+
+    # Variabel Ejection Fraction:
+    if vef < 20:
+        vef_score = 7
+    elif 20 <= vef <= 24:
+        vef_score = 6
+    elif 25 <= vef <= 29:
+        vef_score = 5
+    elif 30 <= vef <= 34:
+        vef_score = 3
+    elif 35 <= vef <= 39:
+        vef_score = 2
+    elif vef >= 40:
+        vef_score = 0
+
+    # Age:
+    if age < 55:
+        age_score = 0
+    elif 56 <= age <= 59:
+        if vef < 30:
+            age_score = 1
+        elif 30 <= vef <= 39:
+            age_score = 2
+        elif age >= 40:
+            age_score = 3
+    elif 60 <= age <= 64:
+        if vef < 30:
+            age_score = 2
+        elif 30 <= vef <= 39:
+            age_score = 4
+        elif age >= 40:
+            age_score = 5
+    elif 65 <= age <= 69:
+        if vef < 30:
+            age_score = 4
+        elif 30 <= vef <= 39:
+            age_score = 6
+        elif age >= 40:
+            age_score = 7
+    elif 70 <= age <= 74:
+        if vef < 30:
+            age_score = 6
+        elif 30 <= vef <= 39:
+            age_score = 8
+        elif age >= 40:
+            age_score = 9
+    elif 75 <= age <= 79:
+        if vef < 30:
+            age_score = 8
+        elif 30 <= vef <= 39:
+            age_score = 10
+        elif age >= 40:
+            age_score = 12
+    elif age >= 80:
+        if vef < 30:
+            age_score = 10
+        elif 30 <= vef <= 39:
+            age_score = 13
+        elif age >= 40:
+            age_score = 15
+
+    # Systolic blood pressure:
+    if sbp < 110:
+        if vef < 30:
+            sbp_score = 5
+        elif 30 <= vef <= 39:
+            sbp_score = 3
+        elif sbp >= 40:
+            sbp_score = 2
+    elif 110 <= sbp <= 119:
+        if vef < 30:
+            sbp_score = 4
+        elif 30 <= vef <= 39:
+            sbp_score = 2
+        elif sbp >= 40:
+            sbp_score = 1
+    elif 120 <= sbp <= 129:
+        if vef < 30:
+            sbp_score = 3
+        elif 30 <= vef <= 39:
+            sbp_score = 1
+        elif sbp >= 40:
+            sbp_score = 1
+    elif 130 <= sbp <= 139:
+        if vef < 30:
+            sbp_score = 2
+        elif 30 <= vef <= 39:
+            sbp_score = 1
+        elif sbp >= 40:
+            sbp_score = 0
+    elif 140 <= sbp <= 149:
+        if vef < 30:
+            sbp_score = 1
+        elif 30 <= vef <= 39:
+            sbp_score = 0
+        elif sbp >= 40:
+            sbp_score = 0
+    elif sbp >= 150:
+        sbp_score = 0
+
+    # BMI
+    if bmi < 15:
+        bmi_score = 6
+    elif 15 <= bmi <= 19:
+        bmi_score = 5
+    elif 20 <= bmi <= 24:
+        bmi_score = 3
+    elif 25 <= bmi <= 29:
+        bmi_score = 2
+    elif bmi >= 30:
+        bmi_score = 0
+
+    # Creatinine
+    if creatinine < 90:
+        crea_score = 0
+    elif 90 <= creatinine <= 109:
+        crea_score = 1
+    elif 110 <= creatinine <= 129:
+        crea_score = 2
+    elif 130 <= creatinine <= 149:
+        crea_score = 3
+    elif 150 <= creatinine <= 169:
+        crea_score = 4
+    elif 170 <= creatinine <= 209:
+        crea_score = 5
+    elif 210 <= creatinine <= 249:
+        crea_score = 6
+    elif creatinine >= 250:
+        crea_score = 8
+
+    # NYHA
+    if nyha == "1":
+        nyha_score = 0
+    elif nyha == "2":
+        nyha_score = 2
+    elif nyha == "3":
+        nyha_score = 6
+    elif nyha == "4":
+        nyha_score = 8
+
+    # Male (sex)
+    if male:
+        male_score = 1
+    else:
+        male_score = 0
+
+    # smoke
+    if smoke:
+        smoke_score = 1
+    else:
+        smoke_score = 0
+
+    # Diabetes
+    if diabetes:
+        diab_score = 3
+    else:
+        diab_score = 0
+
+    # COPD
+    if copd:
+        copd_score = 2
+    else:
+        copd_score = 0
+
+    # Heart failure diagnosed in passed 18 months
+    if heart_fail_diag:
+        heart_fail_score = 2
+    else:
+        heart_fail_score = 0
+
+    # Patient is not on betablockers
+    if betablock:
+        betablock_score = 0
+    else:
+        betablock_score = 3
+
+    # Patient is not on ACEI / ARB
+    if acei_arb:
+        acei_arb_score = 0
+    else:
+        acei_arb_score = 1
+
+    risk_score = \
+        vef_score + age_score + sbp_score + bmi_score + crea_score \
+        + nyha_score + male_score + smoke_score + diab_score + copd_score \
+        + heart_fail_score + betablock_score + acei_arb_score
+
+    return(risk_score)
+
+
 def get_value(variable):
+    return()
 
 
 def test():
-    print(abc)
+    print("abc")
     return()

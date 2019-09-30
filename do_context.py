@@ -17,22 +17,25 @@ output_dict1 = context.apply_context(
     test_file, modifier_path, target_path)
 # # Export context document of record 2
 context.export_context(
-    output_dict=output_dict1, filename="context_output_MAGGIC.xml", record_nr=2)
+    output_dict=output_dict1, filename="context_output_MAGGIC.xml",
+    record_nr=2)
 
 # %% Analyze context output
-# Import single record from file:
-# And display as dataframe:
-# record2_df = context.context_df_file("context_output1.xml", 1)
+# # Import single record from file:
+# # And display as dataframe:
+# record2_df = context.file_to_df("context_output1.xml", 1)
 # print(record2_df)
 # Now for multiple records from dictionary
-context_job_df = context.context_df_dict(output_dict1)
-print(context_job_df)
+context_job_df = context.dict_to_df(output_dict1)
+# print(context_job_df)
 
 # %%
-mag_var_df = preprocess_neg.import_excel("maggic_variables.xlsx")
+mag_var_df = preprocess_neg.import_vars("maggic_variables.xlsx")
 a = MAGGIC_values.join_maggic(mag_var_df, context_job_df)
-b = MAGGIC_values.get_values(a)
-print(b)
-abc = 2
-MAGGIC_values.test()
+b = MAGGIC_values.get_vef_output(a)
+b = MAGGIC_values.get_sbp_output(b)
+b = MAGGIC_values.get_bin_output(b, 2)
+
+
+# MAGGIC_values.test()
 # %%

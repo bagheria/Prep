@@ -1,0 +1,12 @@
+Comments: ''
+Direction: ''
+Lex: koe
+Regex: ''
+Type: PULMONARY_EMBOLISM
+---
+Comments: Chest, Neuro, ABD/Pel
+Direction: ''
+Lex: aneurysm
+Regex: \baneurysm[a-z]*\b|(aneurysmal )?dilatation
+Type: ANEURYSM
+---
