@@ -50,8 +50,8 @@ def markup_record(record_text, record_nr, modifiers, targets, output_dict):
     print("\nFor record number:", record_nr)
     print("Number of sentences that have been marked up:", count)
 
-    print("\nMarkup result:")
-    print(markup_result)
+    # print("\nMarkup result:")
+    # print(markup_result)
 
     # Add sentence markup to contextDocument
     for sentence_markup in markup_result:
@@ -99,7 +99,7 @@ def apply_context(input_context, modifier_path, target_path):
                               modifiers, targets, output_dict)
         else:
             print(f"\nRecord number {record_nr} is no string. This record is skipped.")
-        print(f"Output dict after record: {record_nr}\n{output_dict}")
+        # print(f"Output dict after record: {record_nr}\n{output_dict}")
     n_objects = len(output_dict)
     print(f"\nOutput object contains {n_objects} context objects\n")
     return(output_dict)

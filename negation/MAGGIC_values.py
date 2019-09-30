@@ -57,10 +57,9 @@ def get_bin_output(df):
             mod = df.at[row, "modifier"]
             print(mod, type(mod))
             if isinstance(mod, str):
-
+                print(mod)
 
             # new_df.at[row, "neg"] = mod
-
     return(new_df)
 # %% Extract factor values
 
