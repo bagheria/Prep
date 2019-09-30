@@ -29,6 +29,10 @@ context_job_df = context.context_df_dict(output_dict1)
 print(context_job_df)
 
 # %%
-a = MAGGIC_values.join_maggic("maggic_variables.xlsx", context_job_df)
-
+mag_var_df = preprocess_neg.import_excel("maggic_variables.xlsx")
+a = MAGGIC_values.join_maggic(mag_var_df, context_job_df)
+b = MAGGIC_values.get_values(a)
+print(b)
+abc = 2
+MAGGIC_values.test()
 # %%
