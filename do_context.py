@@ -29,12 +29,11 @@ context.export_context(
 context_job_df = context.dict_to_df(output_dict1)
 print(context_job_df)
 
-# # %%
-# mag_var_df = preprocess_neg.import_vars("maggic_variables.xlsx")
-# a = MAGGIC_values.join_maggic(mag_var_df, context_job_df)
-# b = MAGGIC_values.get_vef_output(a)
-# b = MAGGIC_values.get_sbp_output(b)
-# b = MAGGIC_values.get_bin_output(b, 2)
+# %%
+mag_var_df = preprocess_neg.import_vars("maggic_variables.xlsx")
+a = MAGGIC_values.join_maggic(mag_var_df, context_job_df)
+b = MAGGIC_values.get_maggic_output(a)
+
 
 
 # MAGGIC_values.test()
