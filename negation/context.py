@@ -8,9 +8,10 @@ from textblob import TextBlob
 from pathlib import Path
 import xml.etree.ElementTree as ET
 import pandas as pd
+import re
 
 
-# %%
+# %% Function to markup each sentence
 def markup_sentence(sentence, modifiers, targets, prune_inactive=True):
     """ Function which executes all markup steps at once
     """
@@ -29,13 +30,16 @@ def markup_sentence(sentence, modifiers, targets, prune_inactive=True):
     return markup
 
 
-# %%
+# %% Function to apply markup to all sentences in record
 def markup_record(record_text, record_nr, modifiers, targets, output_dict):
     """ Takes current Patient record, applies context algorithm,
     and appends result to output_dict
     """
     # Is used to collect multiple sentence markups. So records can be complete
     context = pyConText.ConTextDocument()
+
+    # Replace missing whitespaces between sentences
+    record_text = re.sub(r'\.{1,3}|…', '. ', string=record_text)
 
     # Split record into sentences making use of TextBlob
     blob = TextBlob(record_text.lower())
@@ -65,7 +69,8 @@ def markup_record(record_text, record_nr, modifiers, targets, output_dict):
     return(output_dict)
 
 
-# %%
+# %% Apply context to multiple patient records
+# And give a dict with xml objects as output
 def apply_context(input_context, modifier_path, target_path):
     """
     Function that applies context algorithm on patient records input.
@@ -177,6 +182,7 @@ def dict_to_df(dict):
         for node in root.findall(".//node"):
             cat = str.strip(node.find("./category").text)
             # print(f"cat: {cat}\n")
+            # if the 
             if cat == "target":
                 phrase = str.strip(node.find(".//phrase").text)
                 lit = str.strip(node.find(".//literal").text)

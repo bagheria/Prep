@@ -39,7 +39,5 @@ b.to_excel(
     preprocess_neg.get_path("negation", "output", filename="df2.xlsx"))
 
 
-
-
 # MAGGIC_values.test()
 # %%
