@@ -1,11 +1,13 @@
 # %% Imports:
 # from negation import preprocess_neg
 import pandas as pd
-import re
+# import re
 import collections
+import negation.risk_variables as risk_variables
 
 
 def join_maggic(mag_var_df, context_df):
+    
     # Get rid of ['xx'] quotes in category column:
     for i in context_df.index:
         replacement = context_df.at[i, "category"]
@@ -27,85 +29,24 @@ def get_maggic_output(df):
         row = df.loc[i]
 
         # Do negation validation
-        neg = get_bin_output(row.modifier, i)
+        neg = risk_variables.get_bin_output(
+            row.modifier, i)
         row.neg = neg
 
         # Do vef, sbp and nyha
         var = row.variable
         if var == "sbp":
-            pattern = r"(\d{2,3}(?=/\d{2,3}))"
-            value = re.search(pattern, row.phrase).group()
+            value = risk_variables.sbp(row.phrase)
             row.value = value
         elif var == "vef":
-            value = re.search(r"\d+", row.phrase).group()
+            value = risk_variables.vef(row.phrase)
             row.value = value
         # Put row back in dataframe
         df.loc[i] = row
     return(df)
 
 
-# %%
-# # %% Extract variabel ejection fraction values
-# def get_vef_output(phrase):
-#     rows = list(df.index.values)
-#     new_df = df
-#     for row in rows:
-#         if (df.at[row, "variable"]) == "vef":
-#             string = df.at[row, "phrase"]
-#             # Regex pattern to get value
-#             value = re.search(r"\d+", string).group()
-#             # print(type(value))
-#             new_df.at[row, "value"] = value
-
-#     return(new_df)
-
-
-# # %% Extract systolic blood pressure values
-# def get_sbp_output(df):
-#     rows = list(df.index.values)
-#     new_df = df
-#     for row in rows:
-#         if (df.at[row, "variable"]) == "sbp":
-#             string = df.at[row, "phrase"]
-#             # Regex pattern to get value
-#             pattern = r"(\d{2,3}(?=/\d{2,3}))"
-#             value = re.search(pattern, string).group()
-#             # print(type(value))
-#             new_df.at[row, "value"] = value
-
-#     return(new_df)
-
-
-# %% Extract binary values from modifier column
-def get_bin_output(mod, row_number):
-    no_neg_rank = 1
-    if isinstance(mod, str):
-        if mod == "['definite_negated_existence']":
-            rank = -2
-        elif mod == "['probable_negated_existence']":
-            rank = -1
-        elif mod == "['ambivalent_existence']":
-            rank = 0
-        elif mod == "['pseudoneg']":
-            rank = 0
-        elif mod == "['probable_existence']":
-            rank = 1
-        elif mod == "['definite_existence']":
-            rank = 2
-        else:
-            raise Exception(
-                "Error in scoring the negation tag of binary",
-                "MAGGIC variables.",
-                f"Modifier for row {row_number} was '{mod}' and is string,",
-                "but is not recognized as valid negation tag")
-
-    else:
-        rank = no_neg_rank
-    return(rank)
-
-
 # %% Risk calculation
-
 def get_risk(df):
     # Get list of record numbers
     records = df.record.unique()
@@ -143,6 +84,11 @@ def calc_risk_score(df):
             print("Multiple options for VEF value in:\n", df)
 
     return(value)
+
+
+def get_maggic_values(df, id):
+    df = df[df.record == id]
+    return()
 
 
 # Function to check if the extracted variables are within the defined
@@ -343,11 +289,3 @@ def calc_maggic_risk(vef, age, sbp, bmi, creatinine, nyha, male, smoke,
 
     return(risk_score)
 
-
-def get_value(variable):
-    return()
-
-
-def test():
-    print("abc")
-    return()

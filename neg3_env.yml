@@ -1,0 +1,6 @@
+name: neg3
+channels:
+  - conda-forge
+  - defaults
+prefix: C:\Users\MartijnLaptop3\Anaconda3\envs\neg3\envs\neg3
+

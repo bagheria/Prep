@@ -1,6 +1,6 @@
 # %%
-import preprocess_neg
-import lexicon
+from .preprocess_neg import preprocess_neg
+from .lexicon import lexicon
 # import re
 import pandas as pd
 

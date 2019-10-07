@@ -90,7 +90,7 @@ def apply_context(input_context, modifier_path, target_path):
     for record_index in input_context.index:
         record_text = input_context.at[record_index, "text"]
         record_nr = input_context.at[record_index, "record"]
-    
+
         # check if record is string, otherwise skip markup for record
         if isinstance(record_text, str):
             # Apply context
