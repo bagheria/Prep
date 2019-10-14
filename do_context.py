@@ -26,7 +26,7 @@ context.export_context(
 # record2_df = context.file_to_df("context_output1.xml", 1)
 # print(record2_df)
 # Now for multiple records from dictionary
-context_job_df = context.dict_to_df(output_dict1)
+context_job_df = context.dict_to_df(output_dict1, incl_mod=True)
 print(context_job_df)
 context_job_df.to_excel(
     preprocess_neg.get_path("negation", "output", filename="df1.xlsx"))

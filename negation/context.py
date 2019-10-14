@@ -161,7 +161,7 @@ def file_to_df(filename, record):
 
 
 # %%
-def dict_to_df(dict):
+def dict_to_df(dict, incl_mod = False):
     """ Converts dictionary with context objects as values to
     dataframe containing all modifications on the targets
     """
@@ -182,7 +182,7 @@ def dict_to_df(dict):
         for node in root.findall(".//node"):
             cat = str.strip(node.find("./category").text)
             # print(f"cat: {cat}\n")
-            # if the 
+            # if the category indeed is a target:
             if cat == "target":
                 phrase = str.strip(node.find(".//phrase").text)
                 lit = str.strip(node.find(".//literal").text)
@@ -212,6 +212,25 @@ def dict_to_df(dict):
                                   "literal": lit,
                                    "category": cat, "modifier": None})
                     i = i + 1
+            if incl_mod:
+                print("Including mods active")
+                if cat == "modifier":
+                    print("including mod for", key)
+                    phrase = str.strip(node.find(".//phrase").text)
+                    lit = str.strip(node.find(".//literal").text)
+                    cat = str.strip(node.find(".//tagObject/category").text)
+                    print(phrase, lit, cat)
+                    # print(f"phrase: {phrase}, literal: {lit}, cat: {cat}\n")
+                    # print(type(node.findall(".//modifyingCategory")))
+
+                    # Leave "modifier" column empty
+                    df.loc[i] = \
+                        pd.Series({
+                            "record": key, "phrase": phrase,
+                            "literal": lit,
+                            "category": cat, "modifier": None})
+                    i = i + 1
+
     return(df)
 
 
