@@ -5,10 +5,11 @@ from textblob import TextBlob
 # import networkx as nx
 # import pyConTextNLP.display.html as html
 # from IPython.display import display, HTML
-from pathlib import Path
+from pathlib import Path, PurePath
 import xml.etree.ElementTree as ET
 import pandas as pd
 import re
+import os
 
 
 # %% Function to markup each sentence
@@ -111,13 +112,21 @@ def apply_context(input_context, modifier_path, target_path):
 
 
 # %%
-def export_context(output_dict, filename, record_nr):
-    """ Writes the context XML object to an XML file in the output folder.
-    Use filename = "<filename>.xml"
+def export_context(output_dict, subfolder):
+    """ Writes the context XML objects to XML files in the output folder.
     """
-    filepath = Path.cwd() / "negation" / "output" / filename
-    with open(filepath, "w") as file:
-        file.write(output_dict[record_nr]["xml"])
+    new_dir = Path.cwd() / "negation" / "output" / "contextobj" / subfolder
+    if not os.path.isdir(new_dir):
+        os.mkdir(new_dir)
+    else:
+        print(new_dir, "will be overwritten.")
+
+    length = len(output_dict) + 1
+    for i in range(1, length):
+        filename = str(i) + ".xml"
+        filepath = PurePath(new_dir).joinpath(filename)
+        with open(filepath, "w") as file:
+            file.write(output_dict[i]["xml"])
 
 
 # %%

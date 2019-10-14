@@ -17,8 +17,7 @@ output_dict1 = context.apply_context(
     test_file, modifier_path, target_path)
 # # Export context document of record 2
 context.export_context(
-    output_dict=output_dict1, filename="context_output_MAGGIC.xml",
-    record_nr=2)
+    output_dict=output_dict1, subfolder="attempt1")
 
 # %% Analyze context output
 # # Import single record from file:
