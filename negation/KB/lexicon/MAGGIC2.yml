@@ -42,24 +42,24 @@ Comments: ''
 ---
 Type: sbp
 Lex: Systolic Blood Pressure 1
-Regex: \b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b(.{1,5})(\d{2,3})(/(\d{2})?)
+Regex: \b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b(.{1,20})(\d{2,3})/(\d{2})
 Direction: ''
 Comments: ''
 ---
 Type: sbp
 Lex: Systolic Blood Pressure 2
-Regex: (\d{2,3})(/(\d{2})?)(.{1,5})\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b
+Regex: (\d{2,3})/(\d{2})(.{1,20})\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 1
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b(.{1,10})\d{2}
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b(.{1,20})\d{2}
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 2
-Regex: \d{2}%?.{1,10}\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \d{2}%?.{1,20}\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''

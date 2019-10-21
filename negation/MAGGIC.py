@@ -22,11 +22,11 @@ maggic2 = lexicon.gen_regex(maggic1)
 sbp_regex1 = \
     r"\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
     r"riva-rocci|mm\shg|systole|systolisch)\b" \
-    r"(.{1,5})(\d{2,3})(/(\d{2})?)"
+    r"(.{1,20})(\d{2,3})/(\d{2})"
 
 # sbp preceding synonym:
 sbp_regex2 = \
-    r"(\d{2,3})(/(\d{2})?)(.{1,5})" \
+    r"(\d{2,3})/(\d{2})(.{1,20})" \
     r"\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
     r"riva-rocci|mm\shg|systole|systolisch)\b"
 
@@ -46,12 +46,12 @@ vef_regex1 = \
     r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
     r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b" \
-    r"(.{1,10})\d{2}"
+    r"(.{1,20})\d{2}"
 
 # Synonym folowing percentage
 # With margin of 10 characters after percentage
 vef_regex2 = \
-    r"\d{2}%?.{1,10}" \
+    r"\d{2}%?.{1,20}" \
     r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
     r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b"
