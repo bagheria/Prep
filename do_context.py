@@ -2,6 +2,7 @@
 from negation import preprocess_neg
 from negation import context
 from negation import MAGGIC_values
+from negation import preproc
 
 
 # %%
@@ -9,6 +10,15 @@ from negation import MAGGIC_values
 modifier_path = preprocess_neg.get_path_context("modifiers_nl.yml")
 target_path = preprocess_neg.get_path_context("MAGGIC.yml")
 test_file = preprocess_neg.import_excel("test_data_maggic.xlsx")
+
+# %% Preprocess and data checks:
+# Remove rows with empty values:
+data = preproc.drop_empty(test_file)
+preproc.check_data(data)
+
+# %%
+# Preprocess record text:
+data = preproc.preproc_text(data)
 
 # %% Generate Context output
 # Apply context algorithm on data

@@ -39,9 +39,6 @@ def markup_record(record_text, record_nr, modifiers, targets, output_dict):
     # Is used to collect multiple sentence markups. So records can be complete
     context = pyConText.ConTextDocument()
 
-    # Replace missing whitespaces between sentences
-    record_text = re.sub(r'\.{1,3}|…', '. ', string=record_text)
-
     # Split record into sentences making use of TextBlob
     blob = TextBlob(record_text.lower())
     # print(blob)
