@@ -1288,7 +1288,7 @@
   Lex: nee
   Type: DEFINITE_NEGATED_EXISTENCE
   Regex: \bnee\b
-  Direction: forward
+  Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
   Unnamed-6: ""
