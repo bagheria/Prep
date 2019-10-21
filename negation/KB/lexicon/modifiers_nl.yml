@@ -1285,7 +1285,7 @@
   Unnamed-6: ""
   Codes: ""
 ---
-  Lex: nee
+  Lex: 'nee'
   Type: DEFINITE_NEGATED_EXISTENCE
   Regex: \bnee\b
   Direction: bidirectional
@@ -1492,7 +1492,7 @@
   Unnamed-6: ""
   Codes: ""
 ---
-  Lex: niet
+  Lex: 'niet'
   Type: PROBABLE_NEGATED_EXISTENCE
   Regex: \bniet\b
   Direction: forward
