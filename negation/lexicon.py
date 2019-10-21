@@ -97,6 +97,10 @@ def gen_regex(df):
         i = 0
         n = len(synonyms)
         for synonym in synonyms:
+            # Surround each synonym with word boundary class:
+            # Necessary to distinguish between "ii/iv" and "i/iv"
+            synonym = r"\b" + synonym + r"\b"
+
             i += 1
             # If current loop is last synonym of list:
             if i == n:
