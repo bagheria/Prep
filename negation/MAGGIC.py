@@ -20,14 +20,14 @@ maggic2 = lexicon.gen_regex(maggic1)
 
 # Synonym preceding sbp:
 sbp_regex1 = \
-    r"\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
-    r"riva-rocci|mm\shg|systole|systolisch)\b" \
-    r"(.{1,20})(\d{2,3})/(\d{2})"
+    r"\b(rr|mmhg|bloeddruk|tensie|" \
+    r"riva-rocci|mm\shg|systole|systolisch)" \
+    r"(.{0,20})(\d{2,3})/(\d{2})"
 
 # sbp preceding synonym:
 sbp_regex2 = \
-    r"(\d{2,3})/(\d{2})(.{1,20})" \
-    r"\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
+    r"(\d{2,3})/(\d{2})(.{0,20})" \
+    r"(rr|mmhg|bloeddruk|tensie|" \
     r"riva-rocci|mm\shg|systole|systolisch)\b"
 
 # Add SBP row to MAGGIC dataframe:
@@ -45,14 +45,14 @@ maggic2.loc[len(maggic2.index)] = \
 vef_regex1 = \
     r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
-    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b" \
-    r"(.{1,20})\d{2}"
+    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)" \
+    r"(.{0,20})\d{2}"
 
 # Synonym folowing percentage
 # With margin of 10 characters after percentage
 vef_regex2 = \
-    r"\d{2}%?.{1,20}" \
-    r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
+    r"\d{2}%?.{0,20}" \
+    r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
     r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b"
 
