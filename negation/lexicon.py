@@ -107,6 +107,10 @@ def gen_regex(df):
                 addition = f"({synonym})|"
 
             regex = regex + addition
+
+        # Add word boundary class around regex pattern:
+        regex = r"\b" + regex + r"\b"
+
         # Add values to new row in df
         new_df.loc[new_df_index] = \
             pd.Series({"Type": cat, "Lex": lit, "Regex": regex})

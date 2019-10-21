@@ -1,6 +1,6 @@
 # %%
-from .preprocess_neg import preprocess_neg
-from .lexicon import lexicon
+import negation.preprocess_neg as preprocess_neg
+import negation.lexicon as lexicon
 # import re
 import pandas as pd
 
@@ -20,15 +20,15 @@ maggic2 = lexicon.gen_regex(maggic1)
 
 # Synonym preceding sbp:
 sbp_regex1 = \
-    r"([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
-    r"riva-rocci|mm\shg|systole|systolisch)" \
+    r"\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
+    r"riva-rocci|mm\shg|systole|systolisch)\b" \
     r"(.{1,5})(\d{2,3})(/(\d{2})?)"
 
 # sbp preceding synonym:
 sbp_regex2 = \
     r"(\d{2,3})(/(\d{2})?)(.{1,5})" \
-    r"([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
-    r"riva-rocci|mm\shg|systole|systolisch)"
+    r"\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|" \
+    r"riva-rocci|mm\shg|systole|systolisch)\b"
 
 # Add SBP row to MAGGIC dataframe:
 maggic2.loc[len(maggic2.index)] = \
@@ -43,18 +43,18 @@ maggic2.loc[len(maggic2.index)] = \
 # Synonym preceding percentage
 # With a margin of 10 characters between synonym and value
 vef_regex1 = \
-    r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
+    r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
-    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)" \
+    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b" \
     r"(.{1,10})\d{2}"
 
 # Synonym folowing percentage
 # With margin of 10 characters after percentage
 vef_regex2 = \
     r"\d{2}%?.{1,10}" \
-    r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
+    r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
-    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)"
+    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b"
 
 # Testing:
 # # first synonym:
@@ -84,7 +84,7 @@ maggic2["Comments"] = "''"
 
 # %% Convert pandas to yaml format
 yaml_path = preprocess_neg.get_path(
-    "Negation", "KB", "lexicon", filename="MAGGIC.yml")
+    "Negation", "KB", "lexicon", filename="MAGGIC2.yml")
 lexicon.panda_to_yaml(yaml_path, maggic2)
 
 # # %%

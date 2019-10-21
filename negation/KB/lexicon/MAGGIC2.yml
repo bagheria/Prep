@@ -1,0 +1,65 @@
+Type: nyha
+Lex: NYHA class I
+Regex: \b(NYHA I)|(I/iv)|(NYHA I/IV)|(fk i/iv)|(nyha klasse i/iv)|(nyha 1)|(fk 1)|(nyha functionele klasse 1)|(nyha functionele klasse i)|(nyha klasse 1)|(nyha klasse i)\b
+Direction: ''
+Comments: ''
+---
+Type: nyha
+Lex: NYHA class II
+Regex: \b(NYHA ii)|(ii/iiv)|(NYHA ii/iv)|(fk ii/iv)|(nyha klasse ii/iv)|(nyha 2)|(fk 2)|(nyha functionele klasse 2)|(nyha functionele klasse ii)|(nyha klasse 2)|(nyha klasse ii)\b
+Direction: ''
+Comments: ''
+---
+Type: nyha
+Lex: NYHA class III
+Regex: \b(NYHA iii)|(iii/iv)|(NYHA iii/IV)|(fk iii/iv)|(nyha klasse i/iv)|(nyha 3)|(fk 3)|(nyha functionele klasse 3)|(nyha functionele klasse iii)|(nyha klasse 3)|(nyha klasse iii)\b
+Direction: ''
+Comments: ''
+---
+Type: nyha
+Lex: NYHA class IV
+Regex: \b(NYHA iv)|(iv/iv)|(NYHA iv/IV)|(fk iv/iv)|(nyha klasse i/iv)|(nyha 4)|(fk 4)|(nyha functionele klasse 4)|(nyha functionele klasse iv)|(nyha klasse 4)|(nyha klasse iv)\b
+Direction: ''
+Comments: ''
+---
+Type: current smoker
+Lex: Current smoker
+Regex: \b(rookt)|(gerookt)|(roken sociaal)|(sociaal roken)|(roker)|(rookster)|(roken)\b
+Direction: ''
+Comments: ''
+---
+Type: diabetes
+Lex: Diabetes
+Regex: \b(DM)|(diabetes)|(dm2)|(dm1)|(IDDM)|(diabets)|(diabetes mellitus)|(dmt1)|(dmt2)|(diabeet)|(suikerziekte)|(mellitus diabetes)\b
+Direction: ''
+Comments: ''
+---
+Type: copd
+Lex: COPD
+Regex: \b(CAFL)|(COPD)|(CARA)|(obstructieve longziekte)|(chronisch obstructieve longziekte)|(chronisch obstructieve luchtwegaandoening)|(CODP)\b
+Direction: ''
+Comments: ''
+---
+Type: sbp
+Lex: Systolic Blood Pressure 1
+Regex: \b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b(.{1,5})(\d{2,3})(/(\d{2})?)
+Direction: ''
+Comments: ''
+---
+Type: sbp
+Lex: Systolic Blood Pressure 2
+Regex: (\d{2,3})(/(\d{2})?)(.{1,5})\b([^(a-z)]rr[^(a-z)]|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b
+Direction: ''
+Comments: ''
+---
+Type: vef
+Lex: Variabel Ejection Fraction 1
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b(.{1,10})\d{2}
+Direction: ''
+Comments: ''
+---
+Type: vef
+Lex: Variabel Ejection Fraction 2
+Regex: \d{2}%?.{1,10}\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Direction: ''
+Comments: ''
