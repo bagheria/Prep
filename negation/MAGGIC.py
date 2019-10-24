@@ -1,13 +1,13 @@
 # %%
-import negation.preprocess_neg as preprocess_neg
+import negation.utils as utils
 import negation.lexicon as lexicon
 # import re
 import pandas as pd
 
 # %% Load lexicon from Excel
-maggic1_path = preprocess_neg.get_path(
+maggic1_path = utils.get_path(
     "Negation", "KB", filename="MAGGIC targets.xlsx")
-maggic1 = preprocess_neg.import_excel2(maggic1_path)
+maggic1 = utils.import_excel2(maggic1_path)
 print(maggic1)
 
 # %% Generate regex pattern for synonyms:
@@ -83,7 +83,7 @@ maggic2["Direction"] = "''"
 maggic2["Comments"] = "''"
 
 # %% Convert pandas to yaml format
-yaml_path = preprocess_neg.get_path(
+yaml_path = utils.get_path(
     "Negation", "KB", "lexicon", filename="MAGGIC2.yml")
 lexicon.panda_to_yaml(yaml_path, maggic2)
 
