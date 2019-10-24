@@ -6,6 +6,7 @@ import unidecode
 
 # %% Remove empty rows:
 def drop_empty(df):
+    """Removes rows with empty values from dataframe"""
     new_df = df.dropna(axis=0)
     print("\nIndexes removed from data because of missing data:\n",
           set(df.index).symmetric_difference(set(new_df.index)))
@@ -14,6 +15,9 @@ def drop_empty(df):
 
 # %% Check data:
 def check_data(df):
+    """Checks dataframe for right format:
+    2 columns, with first column "record", second column "text".
+    First column must be int, second must be string (object)."""
     if len(df.columns) != 2:
         raise Exception("Provided data contains more than 2 columns")
 
@@ -53,12 +57,14 @@ string2 = "Zin 1 zin zin.. .. .Zin twee zin."
 
 # %%
 def cor_dot_whitesp(string):
+    # replace ellipsis (necessary if ascii is false)
+    string = re.sub("…", ".", string)
     # First, concatentate multiple dots to single dots
-    pat = r"\.{2,5}"
-    string = re.sub(pat, ".", string)
+    # pat = r"\.{2,5}"
+    # string = re.sub(pat, ".", string)
     # print("string1:", string)
     # Then, simplify dot and whitespace combinations
-    pat = r"(\.(\s{0,5})){1,5}"
+    pat = r"(\s{0,3}\.{1,5}(\s{0,5})){1,5}(?![a-z]\.)"
     string = re.sub(pat, ". ", string)
     # print("string2:", string)
     return(string)
@@ -83,6 +89,7 @@ def convert_ascii(string):
 def preproc_text(df, dot = True, ASCII = False):
     """Function to preprocess the patient records for interpunction
     (dots and whitespaces) and convert to ASCII (replace special characters)
+     
      Args:
         df (pandas dataframe): Patient records in pandas dataframe
         dot (Bool): If true, will preprocess dots and whitespaces
@@ -98,10 +105,10 @@ def preproc_text(df, dot = True, ASCII = False):
         # print(df.text[i])
         # print(type(df.text[i]))
         string = df.text[i]
-        if dot:
-            string = cor_dot_whitesp(string)
         if ASCII:
             string = convert_ascii(string)
+        if dot:
+            string = cor_dot_whitesp(string)
         df.at[i, "text"] = string
     print("Preprocessing done:")
     if dot:
