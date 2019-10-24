@@ -99,7 +99,8 @@ def gen_regex(df):
         for synonym in synonyms:
             # Surround each synonym with word boundary class:
             # Necessary to distinguish between "ii/iv" and "i/iv"
-            synonym = r"\b" + synonym + r"\b"
+            # synonym = r"\b" + synonym + r"\b"
+            # Word boundaries are added around complete synonym group. See below
 
             i += 1
             # If current loop is last synonym of list:
@@ -113,7 +114,7 @@ def gen_regex(df):
             regex = regex + addition
 
         # Add word boundary class around regex pattern:
-        regex = r"\b" + regex + r"\b"
+        regex = r"\b(" + regex + r")\b"
 
         # Add values to new row in df
         new_df.loc[new_df_index] = \
