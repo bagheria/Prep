@@ -171,7 +171,8 @@ def dict_to_df(dict, incl_mod = False):
     """ Converts dictionary with context objects as values to
     dataframe containing all modifications on the targets
     """
-
+    if incl_mod:
+        print("Including mods active")
     columns = ["record", "phrase", "literal", "category", "modifier"]
     index = []
     df = pd.DataFrame(index=index, columns=columns)
@@ -219,9 +220,8 @@ def dict_to_df(dict, incl_mod = False):
                                    "category": cat, "modifier": None})
                     i = i + 1
             if incl_mod:
-                print("Including mods active")
                 if cat == "modifier":
-                    print("including mod for", key)
+                    # print("including mod for", key)
                     phrase = str.strip(node.find(".//phrase").text)
                     lit = str.strip(node.find(".//literal").text)
                     cat = str.strip(node.find(".//tagObject/category").text)

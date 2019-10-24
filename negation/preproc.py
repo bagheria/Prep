@@ -1,6 +1,7 @@
 # %%
 import re
 import numpy as np
+import unidecode
 
 
 # %% Remove empty rows:
@@ -72,23 +73,42 @@ import unicodedata
 string = u"ëáí–μ"
 unicodedata.normalize('NFKD', string).encode('ascii', 'ignore')
 
-
-def cor_unicode(string):
-    # correct utf8 to asci
-
-    # Check if type is string again
+# %% Convert non-ASCII characters to ASCII
+def convert_ascii(string):
+    string = unidecode.unidecode(string)
     return(string)
 
 
 # %%
-def preproc_text(df):
+def preproc_text(df, dot = True, ASCII = False):
+    """Function to preprocess the patient records for interpunction
+    (dots and whitespaces) and convert to ASCII (replace special characters)
+     Args:
+        df (pandas dataframe): Patient records in pandas dataframe
+        dot (Bool): If true, will preprocess dots and whitespaces
+        ASCII (Bool): If true, will convert special characters to ASCII
+
+    Returns:
+        df: Returns processed dataframe
+    """
+    if not dot | ASCII:
+        print("No preprocessing. Set dot or ASCII args to True")
+        return
     for i in df.index:
         # print(df.text[i])
         # print(type(df.text[i]))
-        cor1 = cor_dot_whitesp(df.text[i])
-        cor2 = cor_unicode(cor1)
-        df.at[i, "text"] = cor2
+        string = df.text[i]
+        if dot:
+            string = cor_dot_whitesp(string)
+        if ASCII:
+            string = convert_ascii(string)
+        df.at[i, "text"] = string
+    print("Preprocessing done:")
+    if dot:
+        print("Whitespaces and dots are preprocessed")
+    if ASCII:
+        print("Special characters are converted to ASCII")
     return(df)
 
 
-# %%
+

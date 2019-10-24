@@ -1,12 +1,12 @@
 # %%
 # from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktLanguageVars
 import re
-from negation import preprocess_neg
+from negation import utils
 # import pandas as pd
 
 
 # %%
-test_split = preprocess_neg.import_excel("test_split.xlsx")
+test_split = utils.import_excel("test_split.xlsx")
 
 # # %%
 # class UMCULangVars(PunktLanguageVars):
