@@ -1,4 +1,7 @@
 # %%
+import sys
+sys.path.append("C:\\Users\\MartijnLaptop3\\Documents\\GitHub\\pyConTextNLP")
+# %%
 from negation import utils
 from negation import context
 from negation import MAGGIC_values
@@ -7,8 +10,8 @@ from negation import preproc
 
 # %%
 # Declaration of paths to modifier and target data:
-modifier_path = utils.get_path_context("modifiers_nl.yml")
-target_path = utils.get_path_context("MAGGIC.yml")
+modifier_path = utils.get_path_context("modifiers_nl3.yml")
+target_path = utils.get_path_context("MAGGIC2.yml")
 test_file = utils.import_excel("test_data_maggic.xlsx")
 
 # %% Preprocess and data checks:
@@ -16,8 +19,6 @@ test_file = utils.import_excel("test_data_maggic.xlsx")
 data = preproc.drop_empty(test_file)
 # Check if data is in right format
 preproc.check_data(data)
-
-# %%
 # Preprocess record text:
 data = preproc.preproc_text(data, dot=True, ASCII=True)
 
