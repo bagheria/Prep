@@ -46,12 +46,12 @@ vef_regex1 = \
     r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
     r"linker\sventrikel\sejectie\sfractie|kamerfunctie)" \
-    r"(.{0,20})\d{2}"
+    r"[^a-z](.{0,20})\d{2}"
 
 # Synonym folowing percentage
 # With margin of 10 characters after percentage
 vef_regex2 = \
-    r"\d{2}%?.{0,20}" \
+    r"\d{2}.{0,20}[^a-z]" \
     r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
     r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b"

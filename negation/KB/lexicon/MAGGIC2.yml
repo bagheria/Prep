@@ -54,12 +54,12 @@ Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 1
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(.{0,20})\d{2}
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)[^a-z](.{0,20})\d{2}
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 2
-Regex: \d{2}%?.{0,20}(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \d{2}.{0,20}[^a-z](LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''
