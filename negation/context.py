@@ -225,7 +225,7 @@ def dict_to_df(dict, incl_mod = False):
                     phrase = str.strip(node.find(".//phrase").text)
                     lit = str.strip(node.find(".//literal").text)
                     cat = str.strip(node.find(".//tagObject/category").text)
-                    print(phrase, lit, cat)
+                    # print(phrase, lit, cat)
                     # print(f"phrase: {phrase}, literal: {lit}, cat: {cat}\n")
                     # print(type(node.findall(".//modifyingCategory")))
 
