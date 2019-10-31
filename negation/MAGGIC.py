@@ -40,22 +40,41 @@ maggic2.loc[len(maggic2.index)] = \
 
 # %% Variable Ejection Fraction
 
-# Synonym preceding percentage
-# With a margin of 10 characters between synonym and value
-vef_regex1 = \
-    r"\b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
-    r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
-    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)" \
-    r"[^a-z](.{0,20})\d{2}"
+# Synonyms
+vef1_syn = r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
+            r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
+            r"linker\sventrikel\sejectie\sfractie|kamerfunctie)"
+# Lookahead no alphabetic character
+# Used to prevent catching "efficient" with 'ef' synonym
+# No word boundary used here, since value can be next to synonym
+# without whitespace separating them
+vef1_aggr = r"(?![a-z])"
+vef2_aggr = r"()"
+# Spacer between synonym and value
+vef1_spacer = r"(.{0,20}?)"
+# Value: 2 digits
+vef1_value = r"\d{2}"
+# Lookahead no digit after two digit value:
+# To prevent capture of other values such as years
+vef1_ahead = r"(?!\d)"
+# Lookbehind no digit or komma before 2 digit value:
+# To prevent caputure of other values such as years
+# and decimal part of percentages
+vef1_behind = r"(?<=([^,\d])(\d{2}))"
+
+vef_regex1 = (r"\b" + vef1_syn + vef1_aggr + vef1_spacer +
+    vef1_value + vef1_ahead + vef1_behind)
 
 # Synonym folowing percentage
 # With margin of 10 characters after percentage
 vef_regex2 = \
-    r"\d{2}.{0,20}[^a-z]" \
+    r"\d{2}(?<=\D(\d){2})\D(.{0,20})[^a-z]" \
     r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
     r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
     r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b"
 
+vef_regex2 = (vef1_value + vef1_ahead + vef1_behind +
+    r"(|" + vef1_spacer + r"\b)" + vef1_syn + r"\b")
 # Testing:
 # # first synonym:
 # first_syn_string = "Blabla blabla. Bla bla EF is 45 % blabla. blabla"
