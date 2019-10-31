@@ -3456,10 +3456,10 @@
 ---
   Lex: 'comma semicolon enumeration'
   Type: CONJ
-  Regex: ',|;(?!\d)(?<!\d)'
+  Regex: '(,|;)(((?!\d)(?<=\d(;|,)))|(?<!\d(;|,)))'
   Direction: terminate
   Unnamed-4: "lookarounds to prevent catching doubles"
-  Unnamed-5: ""
+  Unnamed-5: "added conditional lookarounds"
   Unnamed-6: ""
   Codes: ""
 ---
