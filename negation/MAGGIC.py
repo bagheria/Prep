@@ -18,17 +18,50 @@ maggic2 = lexicon.gen_regex(maggic1)
 # %% SBP:
 # Captures a 2 or 3 digit number
 
-# Synonym preceding sbp:
-sbp_regex1 = \
-    r"\b(rr|mmhg|bloeddruk|tensie|" \
-    r"riva-rocci|mm\shg|systole|systolisch)" \
-    r"(.{0,20})(\d{2,3})/(\d{2})"
+# SBP synonyms:
+sbp_syn = r"(rr|mmhg|bloeddruk|tensie|" \
+    r"riva-rocci|mm\shg|systole|systolisch)" 
 
-# sbp preceding synonym:
-sbp_regex2 = \
-    r"(\d{2,3})/(\d{2})(.{0,20})" \
-    r"(rr|mmhg|bloeddruk|tensie|" \
-    r"riva-rocci|mm\shg|systole|systolisch)\b"
+# Spacer between synonym and value
+# Non greedy so only closed value will be captured
+sbp_spacer = r"(.{0,20}?)"
+
+# Value:
+# e.g. 120/80 or 80/60 
+sbp_value = r"(\d{2,3})/(\d{2})"
+
+# Lookahead: 
+# no slash after pattern: To prevent date notations to be captured
+# no digit after pattern: To prevent longer values to be captured
+sbp_ahead = r"(?!(/|\d))"
+
+# Pattern compiling:
+# First synonym, then value:
+sbp_regex1 = (r"\b" + sbp_syn + r"(|" + r"\b" + sbp_spacer + r")"
+    + sbp_value + sbp_ahead)
+
+# First value, then synonym:
+sbp_regex2 = (sbp_value + sbp_ahead + r"(|" + sbp_spacer + r"\b)" +
+    sbp_syn + r"\b")
+
+# First syn, than value, then syn again:
+# With PyConTextNLP will only keep this catch,
+# Preventing multiple captures of same value
+sbp_regex3 = (sbp_regex1 + r"(|" + sbp_spacer + r"\b)" +
+    sbp_syn + r"\b")
+
+# Old:
+# Synonym preceding sbp:
+# sbp_regex1 = \
+#     r"\b(rr|mmhg|bloeddruk|tensie|" \
+#     r"riva-rocci|mm\shg|systole|systolisch)" \
+#     r"(.{0,20})(\d{2,3})/(\d{2})"
+
+# # sbp preceding synonym:
+# sbp_regex2 = \
+#     r"(\d{2,3})/(\d{2})(.{0,20})" \
+#     r"(rr|mmhg|bloeddruk|tensie|" \
+#     r"riva-rocci|mm\shg|systole|systolisch)\b"
 
 # Add SBP row to MAGGIC dataframe:
 maggic2.loc[len(maggic2.index)] = \
@@ -37,56 +70,61 @@ maggic2.loc[len(maggic2.index)] = \
 maggic2.loc[len(maggic2.index)] = \
     pd.Series({"Type": "sbp", "Lex": "Systolic Blood Pressure 2",
               "Regex": sbp_regex2})
+maggic2.loc[len(maggic2.index)] = \
+    pd.Series({"Type": "sbp", "Lex": "Systolic Blood Pressure 3",
+              "Regex": sbp_regex3})
 
 # %% Variable Ejection Fraction
 
 # Synonyms
-vef1_syn = r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
+vef_syn = r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
             r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
             r"linker\sventrikel\sejectie\sfractie|kamerfunctie)"
+
 # Lookahead no alphabetic character
 # Used to prevent catching "efficient" with 'ef' synonym
 # No word boundary used here, since value can be next to synonym
 # without whitespace separating them
-vef1_aggr = r"(?![a-z])"
-vef2_aggr = r"()"
+# vef_aggr = r"(?![a-z])"
+# This is now fixed better by a OR pattern in the compiling code. 
+# Syn and val must be directly next to each other (no whitespace) OR
+# The spacer must be in between, with word boundary flanking the synonym
+
 # Spacer between synonym and value
-vef1_spacer = r"(.{0,20}?)"
+# Non greedy: so only closed value will be captured
+vef_spacer = r"(.{0,20}?)"
+
 # Value: 2 digits
-vef1_value = r"\d{2}"
+vef_value = r"\d{2}"
+
 # Lookahead no digit after two digit value:
 # To prevent capture of other values such as years
-vef1_ahead = r"(?!\d)"
+vef_ahead = r"(?!\d)"
+
 # Lookbehind no digit or komma before 2 digit value:
 # To prevent caputure of other values such as years
 # and decimal part of percentages
-vef1_behind = r"(?<=([^,\d])(\d{2}))"
+vef_behind = r"(?<=([^,\d])(\d{2}))"
 
-vef_regex1 = (r"\b" + vef1_syn + vef1_aggr + vef1_spacer +
-    vef1_value + vef1_ahead + vef1_behind)
+# regex pattern compiling:
+# First synonym, then value:
+vef_regex1 = (r"\b" + vef_syn + r"(|" + r"\b" + vef_spacer + r")"
+    + vef_value + vef_ahead + vef_behind)
 
-# Synonym folowing percentage
-# With margin of 10 characters after percentage
-vef_regex2 = \
-    r"\d{2}(?<=\D(\d){2})\D(.{0,20})[^a-z]" \
-    r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
-    r"linkerventrikelejectiefractie|lv\sejectiefractie|" \
-    r"linker\sventrikel\sejectie\sfractie|kamerfunctie)\b"
+# First value, then synonym:
+vef_regex2 = (vef_value + vef_ahead + vef_behind +
+    r"(|" + vef_spacer + r"\b)" + vef_syn + r"\b")
 
-vef_regex2 = (vef1_value + vef1_ahead + vef1_behind +
-    r"(|" + vef1_spacer + r"\b)" + vef1_syn + r"\b")
-# Testing:
-# # first synonym:
-# first_syn_string = "Blabla blabla. Bla bla EF is 45 % blabla. blabla"
-# print(first_syn_string)
-# print(vef_regex1)
-# print(re.search(pattern=vef_regex1, string=first_syn_string))
+# First syn, than value, then syn again:
+# With PyConTextNLP will only keep this catch,
+# Preventing multiple captures of same value
+vef_regex3 = (vef_regex1 + r"(|" + vef_spacer + r"\b)" +
+    vef_syn + r"\b")
 
-# # First value:
-# first_val_string = "test test. 23% vind niet linkerventrikel ejectiefractie"
-# print(first_val_string)
-# print(vef_regex2)
-# print(re.search(pattern=vef_regex2, string=first_val_string))
+# Old:
+# vef_regex1 = (r"\b" + vef_syn + vef_aggr + vef_spacer +
+#     vef_value + vef_ahead + vef_behind)
+
 
 # Add VEF row to MAGGIC dataframe
 maggic2.loc[len(maggic2.index)] = \
@@ -95,6 +133,9 @@ maggic2.loc[len(maggic2.index)] = \
 maggic2.loc[len(maggic2.index)] = \
     pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction 2",
               "Regex": vef_regex2})
+maggic2.loc[len(maggic2.index)] = \
+    pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction 3",
+              "Regex": vef_regex3})
 
 # %% Add column with calc = "MAGGIC"
 # maggic2["calc"] = "MAGGIC"

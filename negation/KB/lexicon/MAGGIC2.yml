@@ -42,24 +42,36 @@ Comments: ''
 ---
 Type: sbp
 Lex: Systolic Blood Pressure 1
-Regex: \b(rr|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)(.{0,20})(\d{2,3})/(\d{2})
+Regex: \b(rr|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)(|\b(.{0,20}?))(\d{2,3})/(\d{2})(?!(/|\d))
 Direction: ''
 Comments: ''
 ---
 Type: sbp
 Lex: Systolic Blood Pressure 2
-Regex: (\d{2,3})/(\d{2})(.{0,20})(rr|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b
+Regex: (\d{2,3})/(\d{2})(?!(/|\d))(|(.{0,20}?)\b)(rr|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b
+Direction: ''
+Comments: ''
+---
+Type: sbp
+Lex: Systolic Blood Pressure 3
+Regex: \b(rr|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)(|\b(.{0,20}?))(\d{2,3})/(\d{2})(?!(/|\d))(|(.{0,20}?)\b)(rr|mmhg|bloeddruk|tensie|riva-rocci|mm\shg|systole|systolisch)\b
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 1
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)[^a-z](.{0,20})\d{2}
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(?!\d)(?<=([^,\d])(\d{2}))
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 2
-Regex: \d{2}.{0,20}[^a-z](LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \d{2}(?!\d)(?<=([^,\d])(\d{2}))(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Direction: ''
+Comments: ''
+---
+Type: vef
+Lex: Variabel Ejection Fraction 3
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(?!\d)(?<=([^,\d])(\d{2}))(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''
