@@ -95,7 +95,12 @@ vef_syn = r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
 vef_spacer = r"(.{0,20}?)"
 
 # Value: 2 digits
-vef_value = r"\d{2}"
+vef_value = r"\d{2}(%?)"
+
+# Value: range of 2 values
+vef_range1 = r"\d{2}(%?)"
+vef_range_sep = r"(\s?)-(\s?)"
+vef_range2 = r"\d{2}(%?)"
 
 # Lookahead no digit after two digit value:
 # To prevent capture of other values such as years
@@ -121,6 +126,15 @@ vef_regex2 = (vef_value + vef_ahead + vef_behind +
 vef_regex3 = (vef_regex1 + r"(|" + vef_spacer + r"\b)" +
     vef_syn + r"\b")
 
+# Pattern compiling of range vef values
+vef_range_reg1 = (r"\b" + vef_syn + r"(|" + r"\b" + vef_spacer + r")"
+    + vef_range1 + vef_behind + vef_range_sep + vef_range2 + vef_ahead)
+
+vef_range_reg2 = (vef_range1 + vef_behind + vef_range_sep + vef_range2 + 
+    vef_ahead + r"(|" + vef_spacer + r"\b)" + vef_syn + r"\b")
+
+vef_range_reg3 = (vef_range_reg1 + r"(|" + vef_spacer + r"\b)" +
+    vef_syn + r"\b")
 # Old:
 # vef_regex1 = (r"\b" + vef_syn + vef_aggr + vef_spacer +
 #     vef_value + vef_ahead + vef_behind)
@@ -136,7 +150,15 @@ maggic2.loc[len(maggic2.index)] = \
 maggic2.loc[len(maggic2.index)] = \
     pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction 3",
               "Regex": vef_regex3})
-
+maggic2.loc[len(maggic2.index)] = \
+    pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction Range 1",
+              "Regex": vef_range_reg1})
+maggic2.loc[len(maggic2.index)] = \
+    pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction Range 2",
+              "Regex": vef_range_reg2})
+maggic2.loc[len(maggic2.index)] = \
+    pd.Series({"Type": "vef", "Lex": "Variabel Ejection Fraction Range 3",
+              "Regex": vef_range_reg3})
 # %% Add column with calc = "MAGGIC"
 # maggic2["calc"] = "MAGGIC"
 maggic2["Direction"] = "''"
