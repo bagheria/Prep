@@ -60,36 +60,36 @@ Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 1
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(%?)(?!\d)(?<=([^,\d])(\d{2}))
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(\D{0,20}?))\d{2}(?!\d)(?<=([^,\d])(\d{2}))(%?)
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 2
-Regex: \d{2}(%?)(?!\d)(?<=([^,\d])(\d{2}))(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \d{2}(?!\d)(?<=([^,\d])(\d{2}))(%?)(|(\D{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction 3
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(%?)(?!\d)(?<=([^,\d])(\d{2}))(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(\D{0,20}?))\d{2}(?!\d)(?<=([^,\d])(\d{2}))(%?)(|(\D{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction Range 1
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(%?)(?<=([^,\d])(\d{2}))(\s?)-(\s?)\d{2}(%?)(?!\d)
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(?<=([^,\d])(\d{2}))(%?)(\s?)-(\s?)\d{2}(?!\d)(%?)
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction Range 2
-Regex: \d{2}(%?)(?<=([^,\d])(\d{2}))(\s?)-(\s?)\d{2}(%?)(?!\d)(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \d{2}(?<=([^,\d])(\d{2}))(%?)(\s?)-(\s?)\d{2}(?!\d)(%?)(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''
 ---
 Type: vef
 Lex: Variabel Ejection Fraction Range 3
-Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(%?)(?<=([^,\d])(\d{2}))(\s?)-(\s?)\d{2}(%?)(?!\d)(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
+Regex: \b(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)(|\b(.{0,20}?))\d{2}(?<=([^,\d])(\d{2}))(%?)(\s?)-(\s?)\d{2}(?!\d)(%?)(|(.{0,20}?)\b)(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|linkerventrikelejectiefractie|lv\sejectiefractie|linker\sventrikel\sejectie\sfractie|kamerfunctie)\b
 Direction: ''
 Comments: ''

@@ -92,15 +92,19 @@ vef_syn = r"(LVEF|EF|ejectiefractie|linkerventrikel\sejectiefractie|" \
 
 # Spacer between synonym and value
 # Non greedy: so only closed value will be captured
-vef_spacer = r"(.{0,20}?)"
+vef_spacer = r"(\D{0,20}?)"
+vef_range_spacer = r"(.{0,20}?)"
+
+# Before value exlcusion:
+# Alternative for vef_behind
+# vef_before = r"[^,\d]"
+# Currently not used
 
 # Value: 2 digits
-vef_value = r"\d{2}(%?)"
+vef_value = r"\d{2}"
 
 # Value: range of 2 values
-vef_range1 = r"\d{2}(%?)"
 vef_range_sep = r"(\s?)-(\s?)"
-vef_range2 = r"\d{2}(%?)"
 
 # Lookahead no digit after two digit value:
 # To prevent capture of other values such as years
@@ -114,10 +118,10 @@ vef_behind = r"(?<=([^,\d])(\d{2}))"
 # regex pattern compiling:
 # First synonym, then value:
 vef_regex1 = (r"\b" + vef_syn + r"(|" + r"\b" + vef_spacer + r")"
-    + vef_value + vef_ahead + vef_behind)
+    + vef_value + vef_ahead + vef_behind + r"(%?)")
 
 # First value, then synonym:
-vef_regex2 = (vef_value + vef_ahead + vef_behind +
+vef_regex2 = (vef_value + vef_ahead + vef_behind + r"(%?)"
     r"(|" + vef_spacer + r"\b)" + vef_syn + r"\b")
 
 # First syn, than value, then syn again:
@@ -127,14 +131,15 @@ vef_regex3 = (vef_regex1 + r"(|" + vef_spacer + r"\b)" +
     vef_syn + r"\b")
 
 # Pattern compiling of range vef values
-vef_range_reg1 = (r"\b" + vef_syn + r"(|" + r"\b" + vef_spacer + r")"
-    + vef_range1 + vef_behind + vef_range_sep + vef_range2 + vef_ahead)
+vef_range_reg1 = (r"\b" + vef_syn + r"(|" + r"\b" + vef_range_spacer + r")"
+    + vef_value + vef_behind + r"(%?)" + vef_range_sep + vef_value + vef_ahead + r"(%?)")
 
-vef_range_reg2 = (vef_range1 + vef_behind + vef_range_sep + vef_range2 + 
-    vef_ahead + r"(|" + vef_spacer + r"\b)" + vef_syn + r"\b")
+vef_range_reg2 = (vef_value + vef_behind + r"(%?)"+ vef_range_sep + vef_value + 
+    vef_ahead + r"(%?)" + r"(|" + vef_range_spacer + r"\b)" + vef_syn + r"\b")
 
-vef_range_reg3 = (vef_range_reg1 + r"(|" + vef_spacer + r"\b)" +
+vef_range_reg3 = (vef_range_reg1 + r"(|" + vef_range_spacer + r"\b)" +
     vef_syn + r"\b")
+
 # Old:
 # vef_regex1 = (r"\b" + vef_syn + vef_aggr + vef_spacer +
 #     vef_value + vef_ahead + vef_behind)
