@@ -29,10 +29,26 @@ data = preproc.preproc_text(data, dot=True, ASCII=True)
 context_obj = context.apply_context(
     data, modifier_path, target_path)
 
-# %% 
+# %% Process Context documents
 results = risk.parse_batch(context_obj)
 
+# %%
+result = results[12]
+result.getOverview()
 
+# %%
+result.getMissingAtrs()
+# %%
+result.getConflictAtrs()
+# %%
+result.getModScores()
+
+# %%
+for var in result.dict:
+    print(var)
+    for finding in result.dict[var]:
+        print(finding)
+        print(finding.negation["score"])
 # %%
 record1 = context_obj[11]["object"]
 

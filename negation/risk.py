@@ -1,5 +1,6 @@
 import re
 from abc import ABC, abstractmethod
+import pandas as pd
 
 # %%
 class varFactory:
@@ -12,7 +13,7 @@ class varFactory:
         pass
 
     def createVar(self, type, object):
-        print("type:", type)
+        # print("type:", type)
         if type in self._numeric_vars:
             return(NumVar(object))
         elif type in self._factorial_vars:
@@ -32,6 +33,10 @@ class RiskVar(ABC):
         self.mod = []
         self.cat = object.categoryString()
         self.phrase = object.getPhrase()
+        self.negation = {
+            "score" : None,
+            "polarity" : None,
+            "conflict" : None}
         self._setType()
 
 
@@ -41,6 +46,10 @@ class RiskVar(ABC):
 
     @abstractmethod 
     def _setType(self):
+        pass
+
+    @abstractmethod
+    def getOverview(self):
         pass
 
     def addMod(self, mod):
@@ -55,8 +64,7 @@ class RiskVar(ABC):
         # If self.mod is not empty:
         if self.mod:
             self._modify()
-            if self.negScore:
-                self._processNeg()
+        self._processNeg()
                 
 
     # Check for modification
@@ -65,7 +73,7 @@ class RiskVar(ABC):
         - Add negation scores to self.negScore list
         if self.negScore is None, no negations detected
         """
-        self.negScore = []
+        negation_scores = []
 
         for mod in self.mod:
             string = mod.categoryString()
@@ -79,28 +87,49 @@ class RiskVar(ABC):
                     score = 1
                 elif string == "definite_existence":
                     score = 2
-                # Pseudonegation and ambivalent negation:
-                else:
+                # ambivalent negation:
+                elif string == "ambivalent_existence":
                     score = 0
-                self.negScore.append(score)
+                else:
+                    raise Exception("Negation category not recognized. \nCategory:",
+                        string)
+            elif string == "pseudoneg":
+                score = 0
+            
+            negation_scores.append(score)
+
+        self.negation["score"] = negation_scores
 
     def _processNeg(self):
-        # Sets can't have duplicates
-        set_neg = set(self.negScore)
-        pos = any(n > 0 for n in set_neg)
-        neg = any(n < 0 for n in set_neg)
-        oth = any(n == 0 for n in set_neg)
+        """Checks negation scores of finding.
+        If negation scores contradict eachother, a conflict is noted
+        If no conflict, negation can be determined to be "positive" (not negated)
+        or "negative" (negated).
+        """
+        # If the finding has no negation modifiers, 
+        # we assume it is positive
+        if not self.negation["score"]:
+            self.negation["conflict"] = False
+            self.negation["polarity"] = "positive"
 
-        if len(set_neg) > 1 and pos and neg:
-            self.conflict_neg = True
+        
         else:
-            self.conflict_neg = False
+            # Sets can't have duplicates
+            set_neg = set(self.negation["score"])
+            pos = any(n > 0 for n in set_neg)
+            neg = any(n < 0 for n in set_neg)
+            oth = any(n == 0 for n in set_neg)
 
-        if not self.conflict_neg:
-            if pos and not neg:
-                self.negation_polarity = "Confirmative"
-            if neg and not pos:
-                self.negation_polarity = "Negative"
+            if len(set_neg) > 1 and pos and neg:
+                self.negation["conflict"] = True
+            else:
+                self.negation["conflict"] = False
+
+            if not self.negation["conflict"]:
+                if pos:
+                    self.negation["polarity"] = "positive"
+                if neg:
+                    self.negation["polarity"] = "negative"
 
 
 class NumVar(RiskVar):
@@ -173,6 +202,8 @@ class NumVar(RiskVar):
         else: 
             self.value = False
 
+    def getOverview(self):
+        return({"value" : self.rec_values, "negation" : self.negation["score"]})
     
 class BinVar(RiskVar):
 
@@ -180,13 +211,24 @@ class BinVar(RiskVar):
         return super().__init__(object)
 
     def __eq__(self, other):
-        return(self.negation_polarity == other.negation_polarity)
+        if self.negation["conflict"] or other.negation["conflict"]:
+            return False
+        elif self.negation["polarity"] == other.negation["polarity"]:
+            return True
+        elif self.negation["polarity"] is not other.negation["polarity"]:
+            return False
+        else:
+            raise Exception("__eq__ evaluation unseen outcome of:\n",
+                self.negation,"\n", other.negation)
 
     def _setType(self):
         self.type = "binary"
 
     def processInfo(self):
         super().processInfo()
+
+    def getOverview(self):
+        return({"negation" : self.negation["score"]})
         
 
 class FactVar(RiskVar):
@@ -195,8 +237,20 @@ class FactVar(RiskVar):
         return super().__init__(object)
 
     def __eq__(self, other):
-        return(self.negation_polarity == other.negation_polarity
-            and self.factor == other.factor)
+        if self.negation["conflict"] or other.negation["conflict"]:
+            neg = False
+        elif self.negation["polarity"] == other.negation["polarity"]:
+            neg = True
+        elif self.negation["polarity"] is not other.negation["polarity"]:
+            neg = False
+        else:
+            raise Exception("__eq__ evaluation unseen outcome of:\n",
+                self.negation,"\n", other.negation)
+        if self.factor == other.factor and neg:
+            return True 
+        else:
+            return False
+        
 
     def _setType(self):
         self.type = "factorial"
@@ -206,8 +260,10 @@ class FactVar(RiskVar):
         self._processFactor()
 
     def _processFactor(self):
-        self.factor = self.literal        
-            
+        self.factor = self.literal    
+    
+    def getOverview(self):
+        return({"factor" : self.factor, "negation" : self.negation["score"]})            
     
 # class NumVar(RiskVar):
 
@@ -269,9 +325,12 @@ class PatientVars:
         """Add all keys of missing attributes to list self.missing
         """
         self.missing = []
+        self.present = []
         for key in self.dict:
             if not self.dict[key]:
                 self.missing.append(key)
+            else:
+                self.present.append(key)
 
     def _detAbundantAtrs(self):
         """Compares for each attribute the findings if multiple findings
@@ -290,22 +349,50 @@ class PatientVars:
         conflicts = {}
         for key in self.abundant: 
             conflicts[key] = {"match":[], "conflict":[]}
-
-        if not self.abundant:
-            self.conflicts = None
         
-        else: 
-            # Loop over variable objects per variable
-            for key in self.abundant:
-                for i in range(len(self.dict[key])):
-                    for j in range(i+1, len(self.dict[key])):
-                        match = self.dict[key][i] == self.dict[key][j]
-                        if match:
-                            conflicts[key]["match"].append(i,j)
-                        else:
-                            conflicts[key]["conflict"].append(i,j)
-            self.conflicts = conflicts
+        # Loop over variable objects per variable
+        for key in self.abundant:
+            for i in range(len(self.dict[key])):
+                for j in range(i+1, len(self.dict[key])):
+                    match = self.dict[key][i] == self.dict[key][j]
+                    if match:
+                        conflicts[key]["match"].append((i,j))
+                    else:
+                        conflicts[key]["conflict"].append((i,j))
+        self.conflicts = conflicts
             
+    # def _gatherResults(self):
+    #     new_dict = {}
+    #     for atr in self.dict:
+    #         ls = []
+    #         for finding in self.dict[atr]:
+    #             if finding.type == "numeric":
+    #                 result = self._gatherNumResult(finding)
+    #             elif finding.type == "factorial":
+    #                 result = self._gatherFactResult(finding)
+    #             elif finding.type == "binary":
+    #                 result = self._gatherBinResult(finding)
+    #             ls.append(result)
+    #         new_dict.update({atr : ls})
+    
+    # def _gatherNumResult(self, finding):
+    #     values = finding.rec_values
+
+    def getOverview(self):
+        new_dict = {}
+        for atr in self.dict:
+            ls = []
+            for finding in self.dict[atr]:
+                data = finding.getOverview()
+                ls.append(data)
+            new_dict.update({atr : ls})
+        return(new_dict)
+                
+                    
+
+            
+
+
 
     def getMissingAtrs(self):
         """Returns list of missing variables"""
@@ -313,7 +400,7 @@ class PatientVars:
             print("No missing variables")
             return(None)
         else:
-            print("Missing variables:")
+            print("Missing variables")
             return(self.missing)
 
     def getConflictAtrs(self):
@@ -326,10 +413,20 @@ class PatientVars:
             return(self.conflicts)
 
     def getModScores(self):
+        """Returns a dictionary with mod scores"""
+        dict = {}
         for key in self.dict:
-            print(key)
-            for finding in self.dict[key]:
-                print(finding.negScore)
+            if self.dict[key]:
+                ls = []
+                for finding in self.dict[key]:
+                    ls.append(finding.negation["score"])
+                new = {key : ls}
+                dict.update(new)
+        if not dict:
+            print("No negation scores")
+            return(None)
+        print("Negation scores:")
+        return(dict)
 
 
 
@@ -341,6 +438,7 @@ def parse_batch(context_dict):
     result = {}
     for pat_id in context_dict:
         patient_vars = parse_object(context_dict[pat_id]["object"])
+        patient_vars.process()
         result.update({pat_id : patient_vars})
     return(result)
 
@@ -368,7 +466,7 @@ def parse_findings(target, sent_markup):
     add modifiers to these objects, process the information in the object,
     and return it to be added to patient object
     """
-    print(target.categoryString())
+    # print(target.categoryString())
     risk_var = var_factory.createVar(target.categoryString(), target)
     # print("\n")
     # print("Target:", target.getCategory(), target.getPhrase(), target.getLiteral())
