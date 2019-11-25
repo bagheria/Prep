@@ -3474,7 +3474,7 @@
 ---
   Lex: 'nooit'
   Type: DEFINITE_NEGATED_EXISTENCE
-  Regex: ""
+  Regex: ''
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
@@ -3492,7 +3492,7 @@
 ---
   Lex: '20st century year'
   Type: DATE
-  Regex: "19[0-9][0-9](?!\d)(?<!\d(.{4}))"
+  Regex: '19[0-9][0-9](?!\d)(?<!\d(.{4}))'
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
@@ -3501,7 +3501,7 @@
 ---
   Lex: '21st century year'
   Type: DATE
-  Regex: "20[0-9][0-9](?!\d)(?<!\d(.{4}))"
+  Regex: '20[0-9][0-9](?!\d)(?<!\d(.{4}))'
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
@@ -3510,7 +3510,7 @@
 ---
   Lex: 'day-month-year'
   Type: DATE
-  Regex: "[0-3]?[0-9][/-]([01]?)[0-9][/-](19|20)[0-9][0-9]"
+  Regex: '[0-3]?[0-9][/-]([01]?)[0-9][/-](19|20)[0-9][0-9]'
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
@@ -3519,7 +3519,7 @@
 ---
   Lex: 'year-month-day'
   Type: DATE
-  Regex: "(19|20)[0-9][0-9][/-]([01]?)[0-9][/-][0-3]?[0-9]"
+  Regex: '(19|20)[0-9][0-9][/-]([01]?)[0-9][/-][0-3]?[0-9]'
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
@@ -3528,7 +3528,7 @@
 ---
   Lex: 'month-day-year'
   Type: DATE
-  Regex: "([01]?)[0-9][/-][0-3]?[0-9][/-](19|20)[0-9][0-9]"
+  Regex: '([01]?)[0-9][/-][0-3]?[0-9][/-](19|20)[0-9][0-9]'
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
@@ -3537,9 +3537,10 @@
 ---
   Lex: 'year-day-month'
   Type: DATE
-  Regex: "(19|20)[0-9][0-9][/-][0-3]?[0-9][/-]([01]?)[0-9]"
+  Regex: '(19|20)[0-9][0-9][/-][0-3]?[0-9][/-]([01]?)[0-9]'
   Direction: bidirectional
   Unnamed-4: ""
   Unnamed-5: ""
   Unnamed-6: ""
   Codes: ""
+
