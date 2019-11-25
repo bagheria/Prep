@@ -14,7 +14,7 @@ from pprint import pprint
 # Declaration of paths to modifier and target data:
 modifier_path = utils.get_path_context("modifiers_nl3.yml")
 target_path = utils.get_path_context("MAGGIC2.yml")
-test_file = utils.import_excel("test_pre_att4.xlsx")
+test_file = utils.import_excel("test_date.xlsx")
 
 # %% Preprocess and data checks:
 # Remove rows with empty values:
@@ -35,9 +35,9 @@ results = risk.parse_batch(context_obj)
 
 # %% Show number of missing variables per patient:
 for i in results:
-    print("Patient", i)
-    print(len(results[i].getMissingAtrs()))
-    
+    print("\nPatient", i)
+    pprint(results[i].getMods())
+
 # %% Show all analysis per patient
 result = results[12]
 for i in results:

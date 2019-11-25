@@ -1,6 +1,8 @@
 import re
 from abc import ABC, abstractmethod
 import pandas as pd
+import negation.modifiers as modifiers
+import negation.risk_vars as risk_vars
 
 # pyreverse -o png -p classdiagram1 negation\risk.py
 
@@ -25,24 +27,24 @@ class Factory:
     def createVar(self, type, object):
         # print("type:", type)
         if type in self._numeric_vars:
-            return(NumVar(object))
+            return(risk_vars.NumVar(object))
         elif type in self._factorial_vars:
-            return(FactVar(object))
+            return(risk_vars.FactVar(object))
         elif type in self._binary_vars:
-            return(BinVar(object))
+            return(risk_vars.BinVar(object))
         else:
             raise Exception("Variable type not recognized:",
             type, object)
     
     def createMod(self, type, object):
         if type in self._examination_mods:
-            return(ExamMod(object))
+            return(modifiers.ExamMod(object))
         elif type in self._negation_mods:
-            return(NegMod(object))
+            return(modifiers.NegMod(object))
         elif type in self._date_mods:
-            return(DateMod(object))
+            return(modifiers.DateMod(object))
         elif type in self._temporality_mods:
-            return(TempMod(object))
+            return(modifiers.TempMod(object))
         else:
             raise Exception("Modifier type not recognized:",
             type, object)
@@ -147,6 +149,20 @@ class PatientVars:
                 data = finding.getOverview()
                 ls.append(data)
             new_dict.update({atr : ls})
+        return(new_dict)
+
+    def getMods(self):
+        new_dict = {}
+        for atr in self.dict:
+            findings = self.dict[atr]
+            if findings:
+                ls = []
+                for finding in findings:
+                    mods = finding.mod
+                    if mods:
+                        for mod in mods:
+                            ls.append((mod.phrase, mod.type, mod.value))
+                new_dict.update({atr : ls})
         return(new_dict)
 
     def getMissingAtrs(self):
@@ -269,7 +285,7 @@ def parse_findings(target, sent_markup):
     risk_var.processInfo()
     return(risk_var)
             
-var_factory = varFactory()
+factory = Factory()
 # # %% Check vefs (getValue method)
 # context_doc = context_obj[11]["object"]
 # pat3 = parse_object(context_doc)'

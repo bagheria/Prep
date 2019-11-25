@@ -1,3 +1,7 @@
+import negation.modifiers as modifiers
+from abc import ABC, abstractmethod
+import re
+
 class RiskVar(ABC):
     
     def __init__(self, object):
@@ -11,9 +15,12 @@ class RiskVar(ABC):
         # Modification initialization
         self.mod = []
         self.negation = {
-            "score" : None,
+            "score" : [],
             "polarity" : None,
             "conflict" : None}
+        self.date = []
+        self.temp = []
+        self.exam = []
         
         # General post_process attributes
         self.result = []
@@ -44,44 +51,23 @@ class RiskVar(ABC):
             self._processMod()
         self._analyseNeg()
                 
-    def _processMod(self):
-        pass
-
-
     # Check for modification
-    def _processNeg(self):
+    def _processMod(self):
         """Processes modifier information:
-        - Add negation scores to self.negScore list
-        if self.negScore is None, no negations detected
         """
-
-        negation_scores = []
-        negation_phrases = []
         for mod in self.mod:
-            string = mod.categoryString()
-            # For negation modifiers:
-            if "existence" in string:
-                if string == "definite_negated_existence":
-                    score = -2
-                elif string == "probable_negated_existence":
-                    score = -1
-                elif string == "probable_existence":
-                    score = 1
-                elif string == "definite_existence":
-                    score = 2
-                # ambivalent negation:
-                elif string == "ambivalent_existence":
-                    score = 0
-                else:
-                    raise Exception("Negation category not recognized. \nCategory:",
-                        string)
-            elif string == "pseudoneg":
-                score = 0
-            
-            negation_scores.append(score)
-
-        self.negation["score"] = negation_scores
-        self.negation["phrase"] = negation_phrases
+            if isinstance(mod, modifiers.ExamMod):
+                self.exam.append(mod.value)
+            elif isinstance(mod, modifiers.NegMod):
+                self.negation["score"].append(mod.value)
+            elif isinstance(mod, modifiers.DateMod):
+                self.date.append(mod.value)
+            elif isinstance(mod, modifiers.TempMod):
+                self.temp.append(mod.value)
+            else:
+                raise Exception(
+                    "Mod not recognized as one of valid options",
+                    mod, mod.phrase, mod.type, mod.literal)
 
     def _analyseNeg(self):
         """Checks negation scores of finding.
@@ -132,6 +118,12 @@ class NumVar(RiskVar):
 
     def processInfo(self):
         super().processInfo()
+        self._getValue()
+        self._conflictValue()
+        self._processValue()
+        self._setResult()
+
+    def _getValue(self):
         if self.cat == "vef":
             self._getValueVef()
         elif self.cat == "sbp":
@@ -139,9 +131,6 @@ class NumVar(RiskVar):
         else:
             raise Exception("Numeric variable, but not recognized as vef or sbp",
                 self.phrase)
-        self._conflictValue()
-        self._processValue()
-        self._setResult()
 
     def _getValueVef(self):
         """Collects values from target's phrase. Multiple values per 
@@ -156,7 +145,7 @@ class NumVar(RiskVar):
         # If there are no other other characters within string 
         # that are no digits, value is just the string 
         if re.search(pattern=r"\D", string=string.group()) is None:
-            self.rec_values.append(string.group())
+            self.value.append(string.group())
         # Else, it is a range, so split up values
         else:
             values = re.findall(pattern = r"\d+", string=string.group())
@@ -165,7 +154,7 @@ class NumVar(RiskVar):
             if len(range_list) != 2:
                 raise Exception("Phrase recognized as range, but no 2 values",
                 self.phrase, string.group(), values, range_list)
-            self.rec_values.append(range_list)
+            self.value.append(range_list)
 
     def _getValueSbp(self):
         string = re.search(pattern = r"\d{2,3}(?=/(\d{2,3}))", string = self.phrase)
@@ -174,10 +163,23 @@ class NumVar(RiskVar):
                 "No value found when searching in phrase of numeric variable",
                 self.phrase)
         else:
-            self.rec_values.append(string.group())
+            self.value.append(string.group())
 
     def _conflictValue(self):
-        if any(isinstance(i, list) for i in self.rec_values) \
+        ranges = []
+        ints = []
+        for i in self.value:
+            if isinstance(i, int):
+                ints.append(i)
+            elif isinstance(i, list):
+                ranges.append(i)
+            else:
+                raise Exception("No int and no list in self.values")
+        
+        if len(set(ints)) > 1:
+            return True
+        
+        if any(isinstance(i, list) for i in self.value) \
             or len(set(self.rec_values)) > 1:
             self.values_conflict = True
         else:

@@ -8,7 +8,6 @@ class Modifier(ABC):
         self.phrase = object.getPhrase()
         self.type = object.categoryString()
         self.literal = object.getLiteral()
-        self.value = None
         self._process()
 
     @abstractmethod
@@ -29,7 +28,7 @@ class NegMod(Modifier):
         return super().__init__(object)
 
     def _process(self):
-        string = object.categoryString()
+        string = self.type
         if string == "definite_negated_existence":
             score = -2
         elif string == "probable_negated_existence":
