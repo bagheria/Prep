@@ -8,6 +8,7 @@ from negation import context
 from negation import MAGGIC_values
 from negation import preproc
 from negation import risk
+from pprint import pprint
 
 # %%
 # Declaration of paths to modifier and target data:
@@ -32,16 +33,29 @@ context_obj = context.apply_context(
 # %% Process Context documents
 results = risk.parse_batch(context_obj)
 
-# %%
+# %% Show number of missing variables per patient:
+for i in results:
+    print("Patient", i)
+    print(len(results[i].getMissingAtrs()))
+    
+# %% Show all analysis per patient
 result = results[12]
-result.getOverview()
+for i in results:
+    print("Patient", i)
+    pprint(results[i].getOverview())
+    print(results[i].getMissingAtrs())
+    print(results[i].getConflictAtrs())
+    print(results[i].getNegation())
+    print("\n")
 
 # %%
 result.getMissingAtrs()
 # %%
-result.getConflictAtrs()
+conflicts = result.getConflictAtrs()
+conflicts
+
 # %%
-result.getModScores()
+result.getNegation()
 
 # %%
 for var in result.dict:
