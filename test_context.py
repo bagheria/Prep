@@ -36,7 +36,14 @@ results = risk.parse_batch(context_obj)
 # %% Show number of missing variables per patient:
 for i in results:
     print("\nPatient", i)
-    pprint(results[i].getMods())
+    pprint(results[i].view())
+
+# %%
+dict = {}
+for i in results:
+    print("\nPatient", i)
+    pprint(results[i].view())
+    dict.update({i : results[i].view()})
 
 # %% Show all analysis per patient
 result = results[12]

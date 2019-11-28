@@ -10,32 +10,27 @@ class RiskVar(ABC):
         self.cat = object.categoryString()
         self.phrase = object.getPhrase()
 
-        self._setType()
-
         # Modification initialization
         self.mod = []
-        self.negation = {
-            "score" : [],
-            "polarity" : None,
-            "conflict" : None}
-        self.date = []
-        self.temp = []
-        self.exam = []
+        # self.negation = {
+        #     "score" : [],
+        #     "polarity" : None,
+        #     "conflict" : None}
+        # self.date = []
+        # self.temp = []
+        # self.exam = []
         
         # General post_process attributes
-        self.result = []
+        # self.result = []
 
     @abstractmethod
     def __eq__(self, other):
         pass
 
-    @abstractmethod 
-    def _setType(self):
-        pass
 
-    @abstractmethod
-    def getOverview(self):
-        pass
+    # @abstractmethod
+    # def getOverview(self):
+    #     pass
 
     def addMod(self, mod):
         """Adds mod to self.mod list"""
@@ -43,78 +38,89 @@ class RiskVar(ABC):
 
     # All methods that must be called after object construction
     # and modifier addition
-    def processInfo(self):
-        """processes object and mod information after complete construction
-        of object"""
-        # If self.mod is not empty:
-        if self.mod:
-            self._processMod()
-        self._analyseNeg()
-                
-    # Check for modification
-    def _processMod(self):
-        """Processes modifier information:
-        """
-        for mod in self.mod:
-            if isinstance(mod, modifiers.ExamMod):
-                self.exam.append(mod.value)
-            elif isinstance(mod, modifiers.NegMod):
-                self.negation["score"].append(mod.value)
-            elif isinstance(mod, modifiers.DateMod):
-                self.date.append(mod.value)
-            elif isinstance(mod, modifiers.TempMod):
-                self.temp.append(mod.value)
-            else:
-                raise Exception(
-                    "Mod not recognized as one of valid options",
-                    mod, mod.phrase, mod.type, mod.literal)
+    # def processInfo(self):
+    #     """processes object and mod information after complete construction
+    #     of object"""
+    #     # If self.mod is not empty:
+    #     if self.mod:
+    #         self._processMod()
+    #     self._analyseNeg()
 
-    def _analyseNeg(self):
-        """Checks negation scores of finding.
-        If negation scores contradict eachother, a conflict is noted
-        If no conflict, negation can be determined to be "positive" (not negated)
-        or "negative" (negated).
-        """
-        # If the finding has no negation modifiers, 
-        # we assume it is positive
-        if not self.negation["score"]:
-            self.negation["conflict"] = False
-            self.negation["polarity"] = "positive"
+    def getModInfo(self):
+        dict = {}
+        for index, mod in enumerate(self.mod):
+            dict.update({index : mod.view()})
+        return(dict)
+
+    def view(self):
+        dict = {
+            "literal" : self.literal,
+            "category" : self.cat,
+            "phrase" : self.phrase,
+            "mods" : self.getModInfo()}
+        return(dict)
+
+    # # Check for modification
+    # def _processMod(self):
+    #     """Processes modifier information:
+    #     """
+    #     for mod in self.mod:
+    #         if isinstance(mod, modifiers.ExamMod):
+    #             self.exam.append(mod.value)
+    #         elif isinstance(mod, modifiers.NegMod):
+    #             self.negation["score"].append(mod.value)
+    #         elif isinstance(mod, modifiers.DateMod):
+    #             self.date.append(mod.value)
+    #         elif isinstance(mod, modifiers.TempMod):
+    #             self.temp.append(mod.value)
+    #         else:
+    #             raise Exception(
+    #                 "Mod not recognized as one of valid options",
+    #                 mod, mod.phrase, mod.type, mod.literal)
+
+    # def _analyseNeg(self):
+    #     """Checks negation scores of finding.
+    #     If negation scores contradict eachother, a conflict is noted
+    #     If no conflict, negation can be determined to be "positive" (not negated)
+    #     or "negative" (negated).
+    #     """
+    #     # If the finding has no negation modifiers, 
+    #     # we assume it is positive
+    #     if not self.negation["score"]:
+    #         self.negation["conflict"] = False
+    #         self.negation["polarity"] = "positive"
 
         
-        else:
-            # Sets can't have duplicates
-            set_neg = set(self.negation["score"])
-            pos = any(n > 0 for n in set_neg)
-            neg = any(n < 0 for n in set_neg)
-            oth = any(n == 0 for n in set_neg)
+    #     else:
+    #         # Sets can't have duplicates
+    #         set_neg = set(self.negation["score"])
+    #         pos = any(n > 0 for n in set_neg)
+    #         neg = any(n < 0 for n in set_neg)
+    #         oth = any(n == 0 for n in set_neg)
 
-            if len(set_neg) > 1 and pos and neg:
-                self.negation["conflict"] = True
-            else:
-                self.negation["conflict"] = False
+    #         if len(set_neg) > 1 and pos and neg:
+    #             self.negation["conflict"] = True
+    #         else:
+    #             self.negation["conflict"] = False
 
-            if not self.negation["conflict"]:
-                if pos:
-                    self.negation["polarity"] = "positive"
-                if neg:
-                    self.negation["polarity"] = "negative"
+    #         if not self.negation["conflict"]:
+    #             if pos:
+    #                 self.negation["polarity"] = "positive"
+    #             if neg:
+    #                 self.negation["polarity"] = "negative"
 
 
 class NumVar(RiskVar):
 
     def __init__(self, object):
         # Numeric post_process attributes
-        self.rec_values = []
-        self.value = None
-        self.values_conflict = None
+        # self.rec_values = []
+        self.value = []
+        # self.values_conflict = None
         return super().__init__(object)
     
     def __eq__(self, other):
         return(self.value == other.value)
-
-    def _setType(self):
-        self.type = "numeric"
 
     def processInfo(self):
         super().processInfo()
@@ -145,12 +151,12 @@ class NumVar(RiskVar):
         # If there are no other other characters within string 
         # that are no digits, value is just the string 
         if re.search(pattern=r"\D", string=string.group()) is None:
-            self.value.append(string.group())
+            self.value.append(int(string.group()))
         # Else, it is a range, so split up values
         else:
             values = re.findall(pattern = r"\d+", string=string.group())
             range_list = []
-            for value in values: range_list.append(value)
+            for value in values: range_list.append(int(value))
             if len(range_list) != 2:
                 raise Exception("Phrase recognized as range, but no 2 values",
                 self.phrase, string.group(), values, range_list)
@@ -163,7 +169,7 @@ class NumVar(RiskVar):
                 "No value found when searching in phrase of numeric variable",
                 self.phrase)
         else:
-            self.value.append(string.group())
+            self.value.append(int(string.group()))
 
     def _conflictValue(self):
         ranges = []
@@ -174,7 +180,8 @@ class NumVar(RiskVar):
             elif isinstance(i, list):
                 ranges.append(i)
             else:
-                raise Exception("No int and no list in self.values")
+                raise Exception("No int and no list in self.values",
+                    i, self.value)
         
         if len(set(ints)) > 1:
             return True
@@ -186,18 +193,13 @@ class NumVar(RiskVar):
             self.values_conflict = False
 
     def _processValue(self):
-        if not self.values_conflict:
-            self.value = self.rec_values[0]
-        else: 
-            self.value = False
+        pass
     
     def _setResult(self):
-        self.result = {
-            "negation" : self.negation["polarity"],
-            "value" : self.rec_values}
+        pass
 
     def getOverview(self):
-        return({"value" : self.rec_values, "negation" : self.negation["polarity"]})
+        return({"value" : self.value, "negation" : self.negation["polarity"]})
     
 class BinVar(RiskVar):
 
@@ -214,9 +216,6 @@ class BinVar(RiskVar):
         else:
             raise Exception("__eq__ evaluation unseen outcome of:\n",
                 self.negation,"\n", other.negation)
-
-    def _setType(self):
-        self.type = "binary"
 
     def processInfo(self):
         super().processInfo()
@@ -249,10 +248,6 @@ class FactVar(RiskVar):
             return True 
         else:
             return False
-        
-
-    def _setType(self):
-        self.type = "factorial"
     
     def processInfo(self):
         super().processInfo()

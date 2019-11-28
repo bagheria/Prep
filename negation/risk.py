@@ -3,26 +3,19 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import negation.modifiers as modifiers
 import negation.risk_vars as risk_vars
+from pprint import pprint
 
 # pyreverse -o png -p classdiagram1 negation\risk.py
 
 # %%
 class Factory:
+    def __init__(self):
+        pass
+
     _numeric_vars = ["age", "vef", "sbp", "bmi", "creatinine"]
     _factorial_vars = ["nyha"]
     _binary_vars = ["gender", "current smoker", "diabetes", "copd", 
     "heart failure", "beta blocker", "acei"]
-
-    _examination_mods = ["indication", "hypothetical"]
-    _negation_mods = [
-        "definite_negated_existence", "probable_negated_existence",
-        "probable_existence", "definite_existence", "ambivalent_existence",
-        "pseudoneg"]
-    _date_mods = ["date"]
-    _temporality_mods = ["historical", "future", "acute"]
-
-    def __init__(self):
-        pass
 
     def createVar(self, type, object):
         # print("type:", type)
@@ -35,6 +28,15 @@ class Factory:
         else:
             raise Exception("Variable type not recognized:",
             type, object)
+
+    _examination_mods = ["indication", "hypothetical"]
+    _negation_mods = [
+        "definite_negated_existence", "probable_negated_existence",
+        "probable_existence", "definite_existence", "ambivalent_existence",
+        "pseudoneg"]
+    _date_mods = ["date"]
+    _temporality_mods = ["historical", "future", "acute"]
+
     
     def createMod(self, type, object):
         if type in self._examination_mods:
@@ -65,6 +67,8 @@ class PatientVars:
         # self.current_smoker = []
         # self.diabetes = []
         # self.copd = []
+        for var in self._risk_vars:
+            setattr(self, var, [])
         dict = {}
         for key in self._risk_vars: 
             dict[key] = []
@@ -74,55 +78,57 @@ class PatientVars:
         """ Adds RiskVar object to PatientVars dictionary based
         on the category of the RiskVar object
         """
-        self.dict[object.cat].append(object)
+        atr_list = getattr(self, object.cat)
+        atr_list.append(object)
+        setattr(self, object.cat, atr_list)
 
     def process(self):
         """Processes all findings. Must be performed before querying results
         """
-        self._detMissingAtrs()
-        self._detAbundantAtrs()
-        self._conflictAtrs()
+        # self._detMissingAtrs()
+        # self._detAbundantAtrs()
+        # self._conflictAtrs()
         
 
-    def _detMissingAtrs(self):
-        """Add all keys of missing attributes to list self.missing
-        """
-        self.missing = []
-        self.present = []
-        for key in self.dict:
-            if not self.dict[key]:
-                self.missing.append(key)
-            else:
-                self.present.append(key)
+    # def _detMissingAtrs(self):
+    #     """Add all keys of missing attributes to list self.missing
+    #     """
+    #     self.missing = []
+    #     self.present = []
+    #     for key in self.dict:
+    #         if not self.dict[key]:
+    #             self.missing.append(key)
+    #         else:
+    #             self.present.append(key)
 
-    def _detAbundantAtrs(self):
-        """Compares for each attribute the findings if multiple findings
-        """
-        self.abundant = []
-        for key in self.dict:
-            atr = self.dict[key]
-            if len(atr) > 1:
-                self.abundant.append(key)
+    # def _detAbundantAtrs(self):
+    #     """Compares for each attribute the findings if multiple findings
+    #     """
+    #     self.abundant = []
+    #     for key in self.dict:
+    #         atr = self.dict[key]
+    #         if len(atr) > 1:
+    #             self.abundant.append(key)
 
-    def _conflictAtrs(self):
-        """Keep track of all matching and conflicting findings per variable
-        Stores them in a dictionary
-        """
-        # Initialize conflicts dictionary
-        conflicts = {}
-        for key in self.abundant: 
-            conflicts[key] = {"match":[], "conflict":[]}
+    # def _conflictAtrs(self):
+    #     """Keep track of all matching and conflicting findings per variable
+    #     Stores them in a dictionary
+    #     """
+    #     # Initialize conflicts dictionary
+    #     conflicts = {}
+    #     for key in self.abundant: 
+    #         conflicts[key] = {"match":[], "conflict":[]}
         
-        # Loop over variable objects per variable
-        for key in self.abundant:
-            for i in range(len(self.dict[key])):
-                for j in range(i+1, len(self.dict[key])):
-                    match = self.dict[key][i] == self.dict[key][j]
-                    if match:
-                        conflicts[key]["match"].append((i,j))
-                    else:
-                        conflicts[key]["conflict"].append((i,j))
-        self.conflicts = conflicts
+    #     # Loop over variable objects per variable
+    #     for key in self.abundant:
+    #         for i in range(len(self.dict[key])):
+    #             for j in range(i+1, len(self.dict[key])):
+    #                 match = self.dict[key][i] == self.dict[key][j]
+    #                 if match:
+    #                     conflicts[key]["match"].append((i,j))
+    #                 else:
+    #                     conflicts[key]["conflict"].append((i,j))
+    #     self.conflicts = conflicts
             
     # def _gatherResults(self):
     #     new_dict = {}
@@ -141,98 +147,110 @@ class PatientVars:
     # def _gatherNumResult(self, finding):
     #     values = finding.rec_values
 
-    def getOverview(self):
-        new_dict = {}
-        for atr in self.dict:
-            ls = []
-            for finding in self.dict[atr]:
-                data = finding.getOverview()
-                ls.append(data)
-            new_dict.update({atr : ls})
-        return(new_dict)
+    # def getOverview(self):
+    #     new_dict = {}
+    #     for atr in self.dict:
+    #         ls = []
+    #         for finding in self.dict[atr]:
+    #             data = finding.getOverview()
+    #             ls.append(data)
+    #         new_dict.update({atr : ls})
+    #     return(new_dict)
 
-    def getMods(self):
-        new_dict = {}
-        for atr in self.dict:
-            findings = self.dict[atr]
-            if findings:
-                ls = []
-                for finding in findings:
-                    mods = finding.mod
-                    if mods:
-                        for mod in mods:
-                            ls.append((mod.phrase, mod.type, mod.value))
-                new_dict.update({atr : ls})
-        return(new_dict)
+    # def getMods(self):
+    #     new_dict = {}
+    #     for atr in self.dict:
+    #         findings = self.dict[atr]
+    #         if findings:
+    #             ls = []
+    #             for finding in findings:
+    #                 mods = finding.mod
+    #                 if mods:
+    #                     for mod in mods:
+    #                         ls.append((mod.phrase, mod.type, mod.value))
+    #             new_dict.update({atr : ls})
+    #     return(new_dict)
 
-    def getMissingAtrs(self):
-        """Returns list of missing variables"""
-        if not self.missing:
-            print("No missing variables")
-            return(None)
-        else:
-            print("Missing variables")
-            return(self.missing)
-
-    def getConflictAtrs(self):
-        """Returns dictionary TagObjects of conflicting findings"""
-        if not self.conflicts:
-            print("No conflicts found")
-            return(None)
-        else:
-            print("Conflicts found:")
-            # print(self.conflicts)
-            # Generate a dictionary that contains the conflicted objects
-            ret_dict = {}
-            # For every atribute check if conflicts present
-            for atr in self.conflicts:
-                atr_confls = self.conflicts[atr]["conflict"]
-                if atr_confls:
-                    ret_dict.update({atr : []})
-                    # For every pair in conflict list
-                    for pair_index in range(0,len(atr_confls)):
-                        # Add object as pair te return dict
-                        pair = atr_confls[pair_index]
-                        obj_pair = (
-                            self.dict[atr][pair[0]], 
-                            self.dict[atr][pair[1]])
-                        ret_dict[atr].append(obj_pair)
-
-            for atr in ret_dict:
-                print("\nAttribute:", atr)
-                for confl in ret_dict[atr]:
-                    print("1:")
-                    print("Text:", confl[0].phrase)
-                    print("Results:", confl[0].result)
-                    print("2:")
-                    print("Text:", confl[1].phrase)
-                    print("Results:", confl[1].result)
-                    print("\n")
-                       
-            return(ret_dict)
-
-
-
-    def getNegation(self):
-        """Returns a dictionary with negation results"""
+    def view(self):
         dict = {}
-        for key in self.dict:
-            if self.dict[key]:
-                ls = []
-                for finding in self.dict[key]:
-                    if not finding.negation["score"]:
-                        ls.append((finding.negation["score"],
-                            finding.negation["polarity"]))
-                    else:
-                        ls.append((finding.negation["score"],
-                            finding.negation["polarity"], ))
-                new = {key : ls}
-                dict.update(new)
-        if not dict:
-            print("No negation scores")
-            return(None)
-        print("Negation scores:")
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            sub_dict = {}
+            for index, finding in enumerate(findings):
+                # sub_dict.update({"mod" : finding.getModInfo()})
+                sub_dict.update({
+                    index : finding.view()})
+            dict.update({var : sub_dict})
         return(dict)
+
+    # def getMissingAtrs(self):
+    #     """Returns list of missing variables"""
+    #     if not self.missing:
+    #         print("No missing variables")
+    #         return(None)
+    #     else:
+    #         print("Missing variables")
+    #         return(self.missing)
+
+    # def getConflictAtrs(self):
+    #     """Returns dictionary TagObjects of conflicting findings"""
+    #     if not self.conflicts:
+    #         print("No conflicts found")
+    #         return(None)
+    #     else:
+    #         print("Conflicts found:")
+    #         # print(self.conflicts)
+    #         # Generate a dictionary that contains the conflicted objects
+    #         ret_dict = {}
+    #         # For every atribute check if conflicts present
+    #         for atr in self.conflicts:
+    #             atr_confls = self.conflicts[atr]["conflict"]
+    #             if atr_confls:
+    #                 ret_dict.update({atr : []})
+    #                 # For every pair in conflict list
+    #                 for pair_index in range(0,len(atr_confls)):
+    #                     # Add object as pair te return dict
+    #                     pair = atr_confls[pair_index]
+    #                     obj_pair = (
+    #                         self.dict[atr][pair[0]], 
+    #                         self.dict[atr][pair[1]])
+    #                     ret_dict[atr].append(obj_pair)
+
+    #         for atr in ret_dict:
+    #             print("\nAttribute:", atr)
+    #             for confl in ret_dict[atr]:
+    #                 print("1:")
+    #                 print("Text:", confl[0].phrase)
+    #                 print("Results:", confl[0].result)
+    #                 print("2:")
+    #                 print("Text:", confl[1].phrase)
+    #                 print("Results:", confl[1].result)
+    #                 print("\n")
+                       
+    #         return(ret_dict)
+
+
+
+    # def getNegation(self):
+    #     """Returns a dictionary with negation results"""
+    #     dict = {}
+    #     for key in self.dict:
+    #         if self.dict[key]:
+    #             ls = []
+    #             for finding in self.dict[key]:
+    #                 if not finding.negation["score"]:
+    #                     ls.append((finding.negation["score"],
+    #                         finding.negation["polarity"]))
+    #                 else:
+    #                     ls.append((finding.negation["score"],
+    #                         finding.negation["polarity"], ))
+    #             new = {key : ls}
+    #             dict.update(new)
+    #     if not dict:
+    #         print("No negation scores")
+    #         return(None)
+    #     print("Negation scores:")
+    #     return(dict)
 
 
 
@@ -282,7 +300,7 @@ def parse_findings(target, sent_markup):
         # print("mod:", mod.getCategory(), mod.getPhrase())
         mod_obj = factory.createMod(mod.categoryString(), mod)
         risk_var.addMod(mod_obj)
-    risk_var.processInfo()
+    # risk_var.processInfo()
     return(risk_var)
             
 factory = Factory()

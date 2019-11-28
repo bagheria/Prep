@@ -13,6 +13,19 @@ class Modifier(ABC):
     @abstractmethod
     def _process(self):
         pass
+    
+    # def __str__(self):
+    #     return(str(vars(self)))
+    
+    def view(self):
+        dict = {
+            "phrase" : self.phrase,
+            "type" : self.type,
+            "literal" : self.literal,
+            "value" : self.value
+        }
+        return(dict)
+
 
 class ExamMod(Modifier):
     def __init__(self, object):
