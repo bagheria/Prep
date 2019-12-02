@@ -1,36 +1,73 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+import pandas as pd
 
 
 class Modifier(ABC):
     def __init__(self, object):
-        self.object = object
+        self._object = object
         self.phrase = object.getPhrase()
         self.type = object.categoryString()
         self.literal = object.getLiteral()
+        self._setSubClass()
         self._process()
 
+    def __eq__(self, other):
+        if self.value == other.value:
+            return(True)
+        else:
+            return(False)
+    
     @abstractmethod
     def _process(self):
         pass
     
     # def __str__(self):
     #     return(str(vars(self)))
-    
+
+    @abstractmethod
+    def _setSubClass(self):
+        pass
+
     def view(self):
         dict = {
             "phrase" : self.phrase,
             "type" : self.type,
             "literal" : self.literal,
-            "value" : self.value
+            "value" : self.value,
+            "subClass" : self.subClass
         }
         return(dict)
+
+    def getDataframe(self):
+        # Initialize dataframe
+        df = pd.DataFrame()
+
+        # # Approach: via view()
+        # dictionary = self.view()
+        # for key, value in dictionary.items():
+        #     mod_series = pd.Series(data=value, name=key)
+        #     df.insert(0, mod_series.name, mod_series, True)
+
+        # Approach: via atributes
+        var_ls = vars(self)
+        for var in var_ls:
+            # Skip "private" variables
+            if var[0] != "_":
+                mod_series = pd.Series(data=getattr(self, var), name=var)
+                df.insert(0, mod_series.name, mod_series, True)
+        
+        df = df.add_prefix("mod_")
+        return(df)
 
 
 class ExamMod(Modifier):
     def __init__(self, object):
 
         return super().__init__(object)
+
+    def _setSubClass(self):
+        self.subClass = "examination"
 
     def _process(self):
         self.value = self.type
@@ -39,6 +76,9 @@ class NegMod(Modifier):
     def __init__(self, object):
 
         return super().__init__(object)
+    
+    def _setSubClass(self):
+        self.subClass = "negation"
 
     def _process(self):
         string = self.type
@@ -66,6 +106,9 @@ class DateMod(Modifier):
     def __init__(self, object):
 
         return super().__init__(object)
+
+    def _setSubClass(self):
+        self.subClass = "date"
 
     def _process(self):
         string = self.phrase
@@ -135,6 +178,9 @@ class TempMod(Modifier):
     def __init__(self, object):
 
         return super().__init__(object)
+
+    def _setSubClass(self):
+        self.subClass = "temporality"
 
     def _process(self):
         self.value = self.type
