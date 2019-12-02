@@ -2,6 +2,8 @@
 import sys
 sys.path.append("C:\\Users\\MartijnLaptop3\\Documents\\GitHub\\pyConTextNLP")
 
+import pandas as pd
+
 # %%
 from negation import utils
 from negation import context
@@ -33,6 +35,15 @@ context_obj = context.apply_context(
 # %% Process Context documents
 results = risk.parse_batch(context_obj)
 
+# %% Dataframe with all patients:
+df = pd.DataFrame()
+for id, pat in results.items():
+    new = pat.getDataframe2()
+    new.insert(
+        loc = 0, column="ID", value=id, allow_duplicates = False)
+    df = df.append(new, ignore_index=True, sort=False)
+df
+# utils.export_excel(df, "df3.xlsx")
 # %% Show number of missing variables per patient:
 for i in results:
     print("\nPatient", i)
