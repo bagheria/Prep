@@ -85,10 +85,17 @@ class PatientVars:
     def process(self):
         """Processes all findings. Must be performed before querying results
         """
+        self._setFindingIndex()
         # self._detMissingAtrs()
         # self._detAbundantAtrs()
         # self._conflictAtrs()
         
+    def _setFindingIndex(self):
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            for index, finding in enumerate(findings):
+                setattr(finding, "index", index)
+
 
     # def _detMissingAtrs(self):
     #     """Add all keys of missing attributes to list self.missing
@@ -182,6 +189,51 @@ class PatientVars:
                     index : finding.view()})
             dict.update({var : sub_dict})
         return(dict)
+    
+    def getDataframe2(self):
+        df = pd.DataFrame()
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            # In case there are findings for current var:
+            if findings:
+                for finding in findings:
+                    df = df.append(finding.getDataframe(), ignore_index=True, sort=False)
+        return(df)
+
+    def getDataframe(self):
+        finding_df = pd.DataFrame()
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            # In case there are findings for current var:
+            if findings:
+                for index, finding in enumerate(findings):
+                    # Make pandas rows for finding:
+
+                    dictionary = finding.view()
+                    # # Initialize dataframe:
+                    # df = pd.DataFrame()
+                    # First, make rows for nested dicts:
+                    df = pd.DataFrame()
+                    mods_df = pd.DataFrame()
+                    for key, value in dictionary.items():
+                        if isinstance(value, dict):
+                            # Put df for nested dicts in mods_df
+                            mods_df = pd.DataFrame.from_dict(value, orient='index').add_prefix("mod_")
+                            # df.append(b, ignore_index=True)
+                        else:
+                            heads = pd.Series(data=value, name=key)
+                            df.insert(0, heads.name, heads, True)
+
+                    # df = pd.DataFrame.from_dict(dictionary, orient="index").add_prefix("var_")
+                    # Repeat the rows from df to match the subdf
+                    df = df.add_prefix("var_")
+                    if len(mods_df.index > 0):
+                        df = pd.concat([df]*len(mods_df.index), ignore_index=True)
+                        # Join both dataframes:
+                        df = df.join(mods_df, on=None, how='outer', sort=False)
+                    finding_df = finding_df.append(df, ignore_index=True, sort=False)
+        return(finding_df)
+
 
     # def getMissingAtrs(self):
     #     """Returns list of missing variables"""
@@ -300,7 +352,7 @@ def parse_findings(target, sent_markup):
         # print("mod:", mod.getCategory(), mod.getPhrase())
         mod_obj = factory.createMod(mod.categoryString(), mod)
         risk_var.addMod(mod_obj)
-    # risk_var.processInfo()
+    risk_var.processInfo()
     return(risk_var)
             
 factory = Factory()
