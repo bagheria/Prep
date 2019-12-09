@@ -111,6 +111,8 @@ class DateMod(Modifier):
         self.subClass = "date"
 
     def _process(self):
+        """Gets the phrase from the TagObject and converts it into a datetime object
+        Stores this object into self._date"""
         string = self.phrase
         # 19xx
         if self.literal == "20st century year":
@@ -172,7 +174,17 @@ class DateMod(Modifier):
                     raise Exception(
                         "Date string could not be converted to datetime object",
                         string, self.literal)        
-        self.value = result
+        self._date = result
+        self._processDate()
+
+    def _processDate(self):
+        """Processes the datetime object into a year value.
+        Stores it in self.value"""
+        date = self._date
+        year = int(date.year)
+        self.value = year
+
+
 
 class TempMod(Modifier):
     def __init__(self, object):
