@@ -1,19 +1,32 @@
-import negation.structure2 as structure
-from structure import batch as batch
+from negation.structure2 import constants
+
 
 class Factory:
+    
     def __init__(self):
         pass
 
-    def createPatientObject(self):
-        pass
+
+    def createBatchObject(self):
+        from negation.structure2 import batch
+        return(batch.Batch())
+
+
+    def createPatientObject(self, calculators):
+        """Calculators can be a name of single calculator (str),
+        or list of multiple calculators (str)
+        """
+        from negation.structure2 import patientObject
+        return(patientObject.patientObj(calculators))
+
 
     def createVarObject(self, var_given):
+        from negation.structure2 import varObject
         # print("type:", type)
 
         # Determine subclass of varObject for this 
-        for type, var in constants.var_type_dict:
-            if var_given == var:
+        for type, var_list in constants.var_type_dict.items():
+            if var_given in var_list:
                 make_type = type
                 if type == "binary":
                     return(varObject.binVar())
@@ -30,6 +43,8 @@ class Factory:
     def createModObject(self):
         """Returns a dictionary with keys the types of modObject
         and values the corresponding modObject type"""
+        from negation.structure2 import modObject
+
         dictionary = {
             "negation" : modObject.negMod(),
             "date" : modObject.dateMod(),
@@ -49,6 +64,3 @@ class Factory:
         # else:
         #     raise Exception("Modifier type not recognized:",
         #     type, object)
-
-factory = Factory()
-

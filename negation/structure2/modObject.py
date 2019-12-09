@@ -3,12 +3,15 @@ import re
 import pandas as pd
 from pprint import pprint
 
+from negation.structure2 import batch, constants, factory, patientObject, varObject
+
+
 # Master Class
 class modObject(ABC):
     def __init__(self):
         self.objects = []
     
-    def _addModifier(self, tagObject):
+    def _addModifierTag(self, tagObject):
         """Adds tagObject to end of self.objects list"""
         self.objects.append(tagObject)
 
