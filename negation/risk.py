@@ -89,7 +89,23 @@ class PatientVars:
         # self._detMissingAtrs()
         # self._detAbundantAtrs()
         # self._conflictAtrs()
-        
+
+    def loopOverFindings(self, method):
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            if findings:
+                for finding in findings:
+                    func = getattr(finding, method)
+                    pprint(func())
+
+    def loopOverMods(self, method):
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            if findings:
+                for finding in findings:
+                    finding.loopOverMods(method)
+
+
     def _setFindingIndex(self):
         for var in self._risk_vars:
             findings = getattr(self, var)
@@ -177,6 +193,16 @@ class PatientVars:
     #                         ls.append((mod.phrase, mod.type, mod.value))
     #             new_dict.update({atr : ls})
     #     return(new_dict)
+
+    def getSummary(self):
+        df = pd.DataFrame()
+        for var in self._risk_vars:
+            findings = getattr(self, var)
+            if findings:
+                for finding in findings:
+                    df = df.append(finding.getSummary(), ignore_index=True, sort=False)
+        return(df)
+
 
     def view(self):
         dict = {}
