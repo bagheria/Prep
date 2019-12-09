@@ -2,6 +2,7 @@ import negation.modifiers as modifiers
 from abc import ABC, abstractmethod
 import re
 import pandas as pd
+from pprint import pprint
 
 class RiskVar(ABC):
     _df_atr_exclude = ["object", "mod"]
@@ -48,7 +49,7 @@ class RiskVar(ABC):
         """processes object and mod information after complete construction
         of object"""
         # If self.mod is not empty:
-        if self.mod:
+        if True: #self.mod:
             self._processMod()
         # self._analyseNeg()
 
@@ -95,6 +96,16 @@ class RiskVar(ABC):
             df = atr_df.join(mod_df, on=None, how='outer', sort=False)
             return(df)
         return(atr_df)
+    
+    def loopOverMods(self, method):
+        for mod in self.mod:
+            func = getattr(mod, method)
+            pprint(func())
+
+
+    def _translate_negation(self):
+        pass
+
     # # Check for modification
     # def _processMod(self):
     #     """Processes modifier information:
@@ -125,8 +136,15 @@ class RiskVar(ABC):
         # Function to produce column for self._modInfo df
         def base(start):
             base = {}
+            this_type = type(start)
             for subclass in self._modSubClasses:
-                base.update({subclass : start})
+                # Necessary to prevent same object is pasted into
+                # every row
+                # if "copy" in dir(start):
+                #     base.update({subclass : start.copy})
+                # else:
+                #     base.update({subclass : start})
+                base.update({subclass : this_type()})
             return(base)
         
         ## Frequency
@@ -159,6 +177,8 @@ class RiskVar(ABC):
         # Make a list per modifier subclass
         value = base(list())
         for mod in self.mod:
+            # print(value[mod.subClass])
+            # print(type(value[mod.subClass]))
             # Add the modifier value to the corresponding item
             value[mod.subClass].append(mod.value)
 
@@ -173,6 +193,26 @@ class RiskVar(ABC):
         # df = pd.DataFrame()
         # for subclass in self._modSubClasses:
         #     row = pd.Series(name = "Subclass", data = subclass)
+
+    def getSummary(self):
+        """returns a pandas series with for each mod type the value(s)
+        in a list"""
+        # Include: cat, phrase, value, modInfo
+        to_df = {}
+        to_df.update({
+            "category" : self.cat,
+            "phrase" : self.phrase,
+            "type" : self.subClass,
+            "value" : self.value})
+
+        for row in self._modInfo.index:
+            to_df.update({row : self._modInfo.at[row, "values"]})
+
+        row = pd.Series(to_df)
+        return(pd.DataFrame(row).transpose())
+
+
+
 
     # def _analyseNeg(self):
     #     """Checks negation scores of finding.
@@ -223,21 +263,21 @@ class NumVar(RiskVar):
 
     def processInfo(self):
         super().processInfo()
-        # self._getValue()
+        self._setValue()
         # self._conflictValue()
         # self._processValue()
         # self._setResult()
 
-    def _getValue(self):
+    def _setValue(self):
         if self.cat == "vef":
-            self._getValueVef()
+            self._setValueVef()
         elif self.cat == "sbp":
-            self._getValueSbp()
+            self._setValueSbp()
         else:
             raise Exception("Numeric variable, but not recognized as vef or sbp",
                 self.phrase)
 
-    def _getValueVef(self):
+    def _setValueVef(self):
         """Collects values from target's phrase. Multiple values per 
         string are separately added to self.rec_values list
         """
@@ -250,7 +290,7 @@ class NumVar(RiskVar):
         # If there are no other other characters within string 
         # that are no digits, value is just the string 
         if re.search(pattern=r"\D", string=string.group()) is None:
-            self.value.append(int(string.group()))
+            self.value = int(string.group())
         # Else, it is a range, so split up values
         else:
             values = re.findall(pattern = r"\d+", string=string.group())
@@ -259,16 +299,16 @@ class NumVar(RiskVar):
             if len(range_list) != 2:
                 raise Exception("Phrase recognized as range, but no 2 values",
                 self.phrase, string.group(), values, range_list)
-            self.value.append(range_list)
+            self.value = range_list
 
-    def _getValueSbp(self):
+    def _setValueSbp(self):
         string = re.search(pattern = r"\d{2,3}(?=/(\d{2,3}))", string = self.phrase)
         if string is None:
             raise Exception(
                 "No value found when searching in phrase of numeric variable",
                 self.phrase)
         else:
-            self.value.append(int(string.group()))
+            self.value = int(string.group())
 
     def _conflictValue(self):
         ranges = []
@@ -321,10 +361,18 @@ class BinVar(RiskVar):
 
     def processInfo(self):
         super().processInfo()
+        self._setValue()
         # self._setResult()
     
-    def _setResult(self):
-        self.result = {"negation" : self.negation["polarity"]}
+    # def _setResult(self):
+    #     self.result = {"negation" : self.negation["polarity"]}
+
+    def _setValue(self):
+        ls = self._modInfo.at["negation", "values"]
+        # # In case now negation mods: True, so positive
+        # if not ls:
+        #     ls = True
+        self.value = ls
 
     def getOverview(self):
         return({"negation" : self.negation["polarity"]})
@@ -356,11 +404,15 @@ class FactVar(RiskVar):
 
     def processInfo(self):
         super().processInfo()
-        # self._processFactor()
+        self._processFactor()
+        self._setValue()
         # self._setResult()
 
     def _processFactor(self):
         self.factor = self.literal    
+    
+    def _setValue(self):
+        self.value = self.factor
 
     def _setResult(self):
         self.result = {
