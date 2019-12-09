@@ -16,7 +16,7 @@ from pprint import pprint
 # Declaration of paths to modifier and target data:
 modifier_path = utils.get_path_context("modifiers_nl3.yml")
 target_path = utils.get_path_context("MAGGIC2.yml")
-test_file = utils.import_excel("test_date.xlsx")
+test_file = utils.import_excel("test_mod_conflicts.xlsx")
 
 # %% Preprocess and data checks:
 # Remove rows with empty values:
@@ -40,9 +40,14 @@ df = pd.DataFrame()
 for id, pat in results.items():
     new = pat.getDataframe2()
     new.insert(
-        loc = 0, column="ID", value=id, allow_duplicates = False)
+        loc = 0, column="Patient", value=id, allow_duplicates = False)
     df = df.append(new, ignore_index=True, sort=False)
 df
+
+# %% Show summary of one finding:
+results[3].copd[0].getSummary()
+
+
 # utils.export_excel(df, "df3.xlsx")
 # %% Show number of missing variables per patient:
 for i in results:
