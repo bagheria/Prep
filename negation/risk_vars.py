@@ -72,6 +72,7 @@ class RiskVar(ABC):
         incl = list(set(vars(self)) - set(self._df_atr_exclude))
         atr_df = pd.DataFrame()
         for atr in incl:
+            # Exclude private attributes from dataframe
             if atr[0] != "_":
                 # print(atr, getattr(self, atr))
                 atr_series = pd.Series(data=getattr(self, atr), name=atr)
@@ -114,6 +115,11 @@ class RiskVar(ABC):
 
     _modSubClasses = ["negation", "date", "temporality", "examination"]
     def _processMod(self):
+        """Processes the mods from this object into information displayed in a dataframe:
+        Currently this dataframe contains per modifier sublclass:
+            - Number of modifiers
+            - If a conflict is present between modifiers of same subclass
+        """
         info = {}
 
         # Function to produce column for self._modInfo df
@@ -123,12 +129,12 @@ class RiskVar(ABC):
                 base.update({subclass : start})
             return(base)
         
-        # Frequency
+        ## Frequency
         freq = base(int())
         for mod in self.mod:
             freq[mod.subClass] = freq[mod.subClass] + 1
         
-        # Conflict
+        ## Conflict
         conf = base(bool())
         # compare every mod 
         length = len(self.mod)
@@ -149,10 +155,18 @@ class RiskVar(ABC):
         else:
             self.mod_conflict = False
                         
-        # Add all to info dictionary
+        ## Modifier values:
+        # Make a list per modifier subclass
+        value = base(list())
+        for mod in self.mod:
+            # Add the modifier value to the corresponding item
+            value[mod.subClass].append(mod.value)
+
+        ## Add all to info dictionary
         info.update({
             "frequency" : freq,
-            "conflict" : conf})
+            "conflict" : conf,
+            "values" : value})
 
         self._modInfo = pd.DataFrame(info)
 
