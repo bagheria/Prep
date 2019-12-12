@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 import re
 import pandas as pd
 from pprint import pprint
+from collections import abc
 
 from negation.structure2 import batch, constants, factory, modObject, varObject
 
 
-class patientObj(ABC):
+class patientObj(abc.Collection):
     """Stores all set variables of a particular patient in 
     attribute: self.objects which is a dictionary with
     key = patient ID, value = list of varObjects
@@ -47,5 +48,34 @@ class patientObj(ABC):
         self.objects[var]._addTargetTag(target)
         self.objects[var]._addModifiers(mods)
 
+    def __contains__(self, x):
+        """Checks if patient self has at least one target finding
+        in variable x
+        """
+        return True if not self.objects[x].isempty() else False
+
+    def __iter__(self):
+        """Iterates over self.objects dictionary and returns:
+        (var, varObject)
+        """
+        yield from self.objects.items()
+
+    # def __next__(self):
+    #     if self._n <= len(self.objects):
+    #         result = self.objects[1]
+    #         self.n += 1
+    #         return result
+    #     else:
+    #         raise StopIteration        
+
+    def __len__(self):
+        """Returns the number of vars for patient with at least
+        1 finding:
+        """
+        n = 0
+        for varObject in self.objects.values():
+            if not varObject.isempty():
+                n = n + 1
+        return(n)
 
 fact = factory.Factory()

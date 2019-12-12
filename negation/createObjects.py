@@ -48,7 +48,7 @@ def parse_batch(context_dict, calculator):
         pat_obj = parse_object(context_doc["object"], init_patient)
         result._addPatientObject(pat_id, pat_obj)
         
-    print(result.len(), "patient objects have been created.")
+    print(len(result), "patient objects have been created.")
     return(result)
 
 

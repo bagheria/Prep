@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 import re
 import pandas as pd
 from pprint import pprint
+from collections import abc
 
 from negation.structure2 import batch, constants, factory, modObject, patientObject
 
 
 # Master Class
-class varObject(ABC):
+class varObject(abc.Collection):
     def __init__(self):
         self.objects_tag = []
         self.objects_mod = []
@@ -43,6 +44,29 @@ class varObject(ABC):
         if self.objects: return False
         else: return True
 
+    def __contains__(self, x):
+        """Checks if value is present in variable: Depends on subtype
+        """
+        pass
+
+    def __iter__(self):
+        """Iterates over self.objects dictionary and returns:
+        (var, varObject)
+        """
+        yield from self.objects
+
+    # def __next__(self):
+    #     if self._n <= len(self.objects):
+    #         result = self.objects[1]
+    #         self.n += 1
+    #         return result
+    #     else:
+    #         raise StopIteration        
+
+    def __len__(self):
+        """Returns the number of instances
+        """
+        return(len(self.objects))
 
 # Binary
 class binVar(varObject):
