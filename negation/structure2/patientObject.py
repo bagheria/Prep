@@ -43,7 +43,7 @@ class patientObj(ABC):
         """Adds the target and corresponding mod to the 
         var object corresponding to the target's risk variable
         """
-        var = target.categoryString()
+        var = target['var']
         self.objects[var]._addTargetTag(target)
         self.objects[var]._addModifiers(mods)
 

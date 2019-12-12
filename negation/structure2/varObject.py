@@ -21,7 +21,7 @@ class varObject(ABC):
     
     def _addModifiers(self, mods):
         for mod in mods:
-            cat = mod.categoryString()
+            cat = mod["category"]
 
             # Translate cat into modifier type:
             found = False

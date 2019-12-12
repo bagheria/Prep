@@ -3,6 +3,36 @@ from negation.structure2 import batch, constants, factory, modObject, patientObj
 # Object to instantiate other objects:
 fact = factory.Factory()
 
+def convert_tagObject(tagObject, mode):
+    """Converts input tagObject into a dictionary with relevant information
+    in dictionary structure.
+    For mode, 'target', or 'modifier' has te be specified.
+    """
+    if mode == "target":
+        result = {
+            "var" : tagObject.categoryString(),
+            "subtype" : tagObject.getLiteral(),
+            "phrase" : tagObject.getPhrase()
+        }
+
+
+    elif mode == "modifier":
+        result = {
+            "category" : tagObject.categoryString(),
+            "term" : tagObject.getLiteral(),
+            "phrase" : tagObject.getPhrase()
+        }
+
+    else:
+        raise Exception(
+            "No valid Mode is selected",
+            "Choose either 'target', or 'modifier'.",
+            "Current mode set:",
+            mode)
+
+    return(result)
+
+
 def parse_batch(context_dict, calculator):
     """Go over all patient context documents and create a 
     patient var object per patient, put in a returned dictionary.
@@ -33,9 +63,19 @@ def parse_object(context_doc, patient_obj):
         # print(sent_markup[1])
         targets = sent_markup[1].getMarkedTargets()
         for target in targets:
+            # obtain mods for this target:
             mods = get_target_mods(target, sent_markup)
+
+            # Convert targetTagObject to dictionary with relevant information
+            target = convert_tagObject(target, mode='target')
+            
+            # Same for modifier tagObjects:
+            new_mods = []
+            for index, mod in enumerate(mods):
+                new_mods.append(convert_tagObject(mod, mode='modifier'))
+            
             # add targets and corresponding mod to patientObj
-            patient_obj._addFindings(target, mods)
+            patient_obj._addFindings(target, new_mods)
     return(patient_obj)
     
 

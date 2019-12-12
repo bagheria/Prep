@@ -11,10 +11,10 @@ date_mods = ["date"]
 temporality_mods = ["historical", "future", "acute"]
 
 mod_type_dict = {
-    "neg" : negation_mods,
+    "negation" : negation_mods,
     "date" : date_mods,
-    "exam" : examination_mods,
-    "temp" : temporality_mods
+    "examination" : examination_mods,
+    "temporality" : temporality_mods
 }
 ## Variables / risk factors:
 var_types = ["numeric", "factorial", "binary"]
