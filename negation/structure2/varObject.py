@@ -10,15 +10,44 @@ from negation.structure2 import batch, constants, factory, modObject, patientObj
 # Master Class
 class varObject(abc.Collection):
     def __init__(self):
-        self.objects_tag = []
-        self.objects_mod = []
+        self.objects = []
+        # self.objects_tag = []
+        # self.objects_mod = []
     
     def _addTargetTag(self, tagObject):
-        """Adds tagObject to end of self.objects list.
-        Also adds modObjects of each type to self.objects_mod
+        """Adds tagobject, and dictionary of mods,
+        as dictionary to self.objects list:
+        self.objects = [
+            {
+            "instance" : tagObject, 
+            "mods" : 
+                {
+                "negation" : negMod, 
+                "date" : dateMod,
+                etc
+                }
+            },
+            {
+            "instance" : tagObject, 
+            "mods" : 
+                {
+                "negation" : negMod, 
+                "date" : dateMod,
+                etc
+                }
+            }
+        ]
         """
-        self.objects_tag.append(tagObject)
-        self.objects_mod.append(fact.createModObject())
+        # """Adds tagObject to end of self.objects list.
+        # Also adds modObjects of each type to self.objects_mod
+        # """
+        # self.objects_tag.append(tagObject)
+        # self.objects_mod.append(fact.createModObject())
+
+        # Put everything in 
+        self.objects.append({
+            "instance" : tagObject, 
+            "mods" : fact.createModObject()})
     
     def _addModifiers(self, mods):
         for mod in mods:
@@ -30,7 +59,7 @@ class varObject(abc.Collection):
                 if cat in list:
                     type = key
                     # select last dict from mod object list:
-                    self.objects_mod[-1][type]._addModifierTag(mod)
+                    self.objects[-1]["mods"][type]._addModifierTag(mod)
                     found = True
                     # Can skip remainder of loop
                     break
