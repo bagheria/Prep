@@ -17,6 +17,8 @@ mod_type_dict = {
     "temporality" : temporality_mods
 }
 ## Variables / risk factors:
+
+# Types
 var_types = ["numeric", "factorial", "binary"]
 
 numeric_vars = ["age", "vef", "sbp", "bmi", "creatinine"]
@@ -30,6 +32,13 @@ var_type_dict = {
     "binary" : binary_vars
 }
 
+# Factors
+nyha_factors = [("NYHA class I", 1), ("NYHA class II", 2), ("NYHA class III", 3), ("NYHA class IV", 4)]
+
+factors = {
+    "nyha" : nyha_factors
+}
+
 ## Calculators:
 calculators = ["maggic"]
 
@@ -41,6 +50,7 @@ vars_incl = {"maggic" : maggic_vars_incl}
 vars_excl = {"maggic" : maggic_vars_excl}
 
 def add_ls(ls):
+    # Add up all values from multiple dictionaries into 1 flat list
     result = []
     for i in ls.values():
         result = result + i
