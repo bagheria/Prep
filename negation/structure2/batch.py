@@ -47,10 +47,10 @@ class Batch(abc.Collection):
         ls = []
         for id, pat in self.objects.items():
             df = pat.getDataframe()
-            df = df.insert(
+            df.insert(
                 loc = 0, column="patID", value=id, allow_duplicates = False)
             ls.append(df)
-        df = pd.concat(ls, axis=1)
+        df = pd.concat(ls, axis=0)
         return(df)
 # Test code:
 

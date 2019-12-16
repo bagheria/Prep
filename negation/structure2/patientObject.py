@@ -85,7 +85,7 @@ class patientObj(abc.Collection):
             # df = df.insert(
             #     loc = 0, column="colname", value=id, allow_duplicates = False)
             ls.append(df)
-        df = pd.concat(ls, axis=0, ignore_index=True).reset_index()
+        df = pd.concat(ls, axis=0, ignore_index=True, sort=False).reset_index()
         return(df)
 
 fact = factory.Factory()
