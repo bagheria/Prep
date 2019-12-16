@@ -147,6 +147,13 @@ class varObject(abc.Collection):
         # df = df.transpose()
         return(df)
 
+    def process(self):
+        # Activate processing of mod objects:
+        for i in self.objects:
+            for mod in i["mods"].values():
+                mod.process()
+
+
     def getSummary(self):
 
         serie = pd.Series()

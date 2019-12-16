@@ -88,4 +88,11 @@ class patientObj(abc.Collection):
         df = pd.concat(ls, axis=0, ignore_index=True, sort=False).reset_index()
         return(df)
 
+
+    def process(self):
+        for var_ls in self.objects.values():
+            for varObj in var_ls:
+                var_ls.process()
+
+
 fact = factory.Factory()

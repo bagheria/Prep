@@ -52,6 +52,10 @@ class Batch(abc.Collection):
             ls.append(df)
         df = pd.concat(ls, axis=0)
         return(df)
+
+    def process(self):
+        for i in self.objects.values():
+            i.process()
 # Test code:
 
 # a = Batch()

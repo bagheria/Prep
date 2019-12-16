@@ -75,10 +75,13 @@ class modObject(abc.Collection):
     def __len__(self):
         return(len(self.objects))
 
-    # @abstractmethod
-    # def process(self):
-    #     pass
+    def process(self):
+        if not self.isEmpty():
+            self._addInfo()
 
+    @abstractmethod
+    def _addInfo(self):
+        pass
 
     # @abstractmethod
     # def _addInfo(self):
@@ -97,9 +100,6 @@ class modObject(abc.Collection):
 class negMod(modObject):
     def __init__(self):
         super().__init__()
-
-    def process(self):
-        self._addInfo()
 
     def _addInfo(self):
         """Adds negation score and isNegated property
@@ -182,16 +182,10 @@ class dateMod(modObject):
     def __init__(self):
         super().__init__()
 
-    def process(self):
-        """Function that needs to be called after
-        adding all findings to object"""
-        if not self.isEmpty():
-            self._addInfo()
-
 
     def _addInfo(self):
         for i in self.objects:
-            date = self._processDate(i["phrase"], i["subtype"])
+            date = self._processDate(i["phrase"], i["term"])
             year = int(date.year)
             i.update({
                 "date" : date,
@@ -201,7 +195,7 @@ class dateMod(modObject):
     def _processDate(self, phrase, date_type):
         """Gets the phrase from the TagObject and converts it into a datetime object
         Stores this object into self._date"""
-        string = self.phrase
+        string = phrase
         # 19xx
         if date_type == "20st century year":
             result = datetime.strptime(
@@ -314,12 +308,21 @@ class dateMod(modObject):
             f"{prefix}min" : min,
             f"{prefix}max" : max
         })
+
+
 # Temporality
 class tempMod(modObject):
     def __init__(self):
         super().__init__()
 
+    def _addInfo(self):
+        pass
+
+
 # Examination
 class examMod(modObject):
     def __init__(self):
         super().__init__()
+
+    def _addInfo(self):
+        pass
