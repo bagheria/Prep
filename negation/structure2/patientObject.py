@@ -78,4 +78,14 @@ class patientObj(abc.Collection):
                 n = n + 1
         return(n)
 
+    def getDataframe(self):
+        ls = []
+        for i in self.objects.values():
+            df = i.getDataframe()
+            # df = df.insert(
+            #     loc = 0, column="colname", value=id, allow_duplicates = False)
+            ls.append(df)
+        df = pd.concat(ls, axis=0, ignore_index=True).reset_index()
+        return(df)
+
 fact = factory.Factory()

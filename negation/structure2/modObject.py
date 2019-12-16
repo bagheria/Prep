@@ -22,21 +22,38 @@ class modObject(abc.Collection):
         else: return True
 
     def getDataframe(self):
-        df = pd.DataFrame()
+        if self.isEmpty():
+            return(pd.DataFrame())
+
+        ls = []
         for index, instance in enumerate(self.objects):
             # Set name of series to "<Classname><index>"
-            serie = pd.Series(i, name=str(self)+str(index))
-            # append series to dataframe
-            df = pd.concat([df, serie], axis=1, sort=False).reset_index()
-        # Set dict keys as column names instead of row indeces.
-        df = df.transpose()
+            instance.update({"index" : str(self)+str(index)})
+            serie = pd.Series(instance)
+            df = pd.DataFrame([serie])
+            ls.append(df)
+
+        # concat all separate dataframes:
+        df = pd.concat(ls, ignore_index=True, sort=False)#.reset_index()
+        df = df.add_prefix("mod_")
         return(df)
 
-    # def __contains__(self, x):
-    #     """Checks if value x is in instances
-    #     Should be specified per subtype
-    #     """
-    #     pass
+    def getSummary(self):
+        # Get summary dictionary
+        data = self._summarize()
+
+        # serie = pd.Series(data, name=)
+        return(data)
+
+    def __contains__(self, x):
+        """Checks if value x is in instances
+        (Should be specified per subtype)
+        """
+        for i in self.objects:
+            if x in i.values():
+                return(True)
+
+        return(False)
 
     def __iter__(self):
         yield from self.objects
@@ -45,6 +62,8 @@ class modObject(abc.Collection):
         """Returns name of class"""
         return(type(self).__name__)
 
+    def __repr__(self):
+        return(repr(self.objects))
     # def __next__(self):
     #     if self._n <= len(self.objects):
     #         result = self.objects[1]
@@ -56,24 +75,31 @@ class modObject(abc.Collection):
     def __len__(self):
         return(len(self.objects))
 
-    @abstractmethod
-    def process(self):
-        pass
+    # @abstractmethod
+    # def process(self):
+    #     pass
 
 
-    @abstractmethod
-    def _addInfo(self, inp_key, outp_key, func):
-        pass
-        # for instance in self.objects:
-        #     x = instance[inp_key]
-        #     result = func(x)
-        #     instance.update({outp_key : x})
+    # @abstractmethod
+    # def _addInfo(self):
+    #     pass
+    #     # for instance in self.objects:
+    #     #     x = instance[inp_key]
+    #     #     result = func(x)
+    #     #     instance.update({outp_key : x})
+    
+    # @abstractmethod
+    # def _summarize(self):
+    #     pass
 
 
 # Negation
 class negMod(modObject):
     def __init__(self):
         super().__init__()
+
+    def process(self):
+        self._addInfo()
 
     def _addInfo(self):
         """Adds negation score and isNegated property
@@ -112,6 +138,41 @@ class negMod(modObject):
                 string)
 
 
+    def _summarize(self):
+        """Processes summary information for this modObject"""
+        findings = self.objects
+
+        # Number of observations
+        n = len(findings)
+
+        # Put main values of findings in a list:
+        ls = []
+        key = "isNegated"
+        if n > 0:
+            for i in findings:
+                ls.append(i[key])
+        # Transform list into set
+        ls = set(ls)
+
+        # Conflicting values
+        if ls > 1: conflict = True
+        else: conflict = False
+
+        # conflict = not any(dict[key] > otherDict[key] for key in dict)
+        # If less then 2 observations, no conflict possible
+
+        # isNegated
+        if len(ls) == 1:
+            isNegated = ls[0]
+        else: isNegated = None
+
+        # return as dictionary
+        prefix = "neg_"
+        return({
+            f"{prefix}n" : n,
+            f"{prefix}conflict" : conflict,
+            f"{prefix}isNegated" : isNegated
+        })
 
 
 
@@ -212,6 +273,47 @@ class dateMod(modObject):
                         "Date string could not be converted to datetime object",
                         string, date_type)        
 
+    def _summarize(self):
+        """Processes summary information for this modObject"""
+        findings = self.objects
+
+        # Number of observations
+        n = len(findings)
+
+        # Put main values of findings in a list:
+        ls = []
+        key = "year"
+        if n > 0:
+            for i in findings:
+                ls.append(i[key])
+        # Transform list into set
+        ls = set(ls)
+
+        # Conflicting values
+        if ls > 1: conflict = True
+        else: conflict = False
+
+        # conflict = not any(dict[key] > otherDict[key] for key in dict)
+        # If less then 2 observations, no conflict possible
+
+        # min, median and max
+        try:
+            min = min(ls)
+        except ValueError:
+            min = None
+        try:
+            max = max(ls)
+        except ValueError:
+            max = None
+
+        # return as dictionary
+        prefix = "date_"
+        return({
+            f"{prefix}n" : n,
+            f"{prefix}conflict" : conflict,
+            f"{prefix}min" : min,
+            f"{prefix}max" : max
+        })
 # Temporality
 class tempMod(modObject):
     def __init__(self):
