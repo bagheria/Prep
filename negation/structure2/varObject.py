@@ -55,6 +55,7 @@ class varObject(abc.Collection):
 
             # Translate cat into modifier type:
             found = False
+            # Lookup in which modObject subclass this cat belongs
             for key, list in constants.mod_type_dict.items():
                 if cat in list:
                     type = key
@@ -63,7 +64,8 @@ class varObject(abc.Collection):
                     found = True
                     # Can skip remainder of loop
                     break
-            # If type not found:
+        
+            # If type for this mod not found:
             if not found:
                 raise Exception("categoryString of mod was not recognized")
             

@@ -11,6 +11,12 @@ class patientObj(abc.Collection):
     """Stores all set variables of a particular patient in 
     attribute: self.objects which is a dictionary with
     key = patient ID, value = list of varObjects
+    self.objects = {
+        "copd" : varObject,
+        "vef" : varObject,
+        "nyha" : varobject,
+        etc
+    }
     """ 
     def __init__(self, calcs):
 
