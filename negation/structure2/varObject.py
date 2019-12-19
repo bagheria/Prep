@@ -153,6 +153,12 @@ class varObject(abc.Collection):
             for mod in i["mods"].values():
                 mod.process()
 
+        # Process information in var level:
+        self._addInfo()
+
+    @abstractmethod
+    def _addInfo(self):
+        pass
 
     def getSummary(self):
         """Combines summary of mods with var findings.
@@ -196,6 +202,13 @@ class binVar(varObject):
     def _summarize(self):
         pass
 
+    def _addInfo(self):
+        """Nothing to process, all info is in modifiers
+        for binary risk variables
+        """
+        pass
+
+
 # Factorial
 class factVar(varObject):
     def __init__(self):
@@ -203,6 +216,34 @@ class factVar(varObject):
 
     def _summarize(self):
         pass
+
+    def _addInfo(self):
+        """ Processes subtype into factor and corresponding integer
+        """
+        for i in self.objects:
+            # get factor string
+            factor = i["instance"]["subtype"]
+            
+            # Process factor string into factor integer
+            fact_int = self._nyha_to_int(factor)
+
+            # Update dictionary with new variables:
+            i["instance"].update({
+                "factor" : factor,
+                "factInt" : fact_int
+            })
+
+    def _nyha_to_int(self, string):
+        for j in constants.nyha_factors:
+            if string == j[0]:
+                integer = j[1]
+                return(integer)
+        # If no string was recognized after looping through list:
+        raise Exception(
+                "String not recognized as NYHA factor",
+                "factor:", string)
+        
+
 
 # Numeric
 class numVar(varObject):
@@ -212,5 +253,67 @@ class numVar(varObject):
     def _summarize(self):
         pass
 
+    def _getVef(self, phrase):
+        """Returns list with one value, or two values in case of a range
+        """
+        # Search for pattern with outer characters digits
+        string = re.search(pattern = r"\d(.*)\d", string = phrase)
+        if string is None:
+            raise Exception(
+                "No value found when searching in phrase of numeric variable",
+                phrase)
+        # If there are no other other characters within string 
+        # that are no digits, value is just the string 
+        if re.search(pattern=r"\D", string=string.group()) is None:
+            return([int(string.group())])
+
+        # Else, it is a range, so split up values
+        else:
+            values = re.findall(pattern = r"\d+", string=string.group())
+            range_list = []
+            for value in values: range_list.append(int(value))
+            if len(range_list) != 2:
+                raise Exception("Phrase recognized as range, but no 2 values",
+                phrase, string.group(), values, range_list)
+            return(range_list)
+
+
+    def _getSbp(self, phrase):
+        "Returns list again?"
+        string = re.search(pattern = r"\d{2,3}(?=/(\d{2,3}))", string = phrase)
+        if string is None:
+            raise Exception(
+                "No value found when searching in phrase of numeric variable",
+                self.phrase)
+        else:
+            return(int(string.group()))
+
+    def _addInfo(self):
+        for i in self.objects:
+            data = i["instance"]
+            # Get values
+            if data["var"] == "vef":
+                values = self._getVef(data["phrase"])
+            elif data["var"] == "sbp":
+                values = self._getSbp(data["phrase"])
+            else:
+                raise Exception(
+                    "Numeric var finding category not recognized",
+                    "var:", data["var"],
+                    "phrase:", data["phrase"])
+
+
+            # Check if list
+            if len(values) > 1:
+                isRange = True
+            else: isRange = False
+
+            # update information:
+            data.update({
+                "values" : values,
+                "isRange" : isRange
+            })
+
+    
 
 fact = factory.Factory()

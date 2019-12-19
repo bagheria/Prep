@@ -314,7 +314,9 @@ class tempMod(modObject):
         super().__init__()
 
     def _addInfo(self):
-        pass
+        for i in self.objects:
+            i.update({"concl" : i["category"]})
+
 
     def _summarize(self):
         findings = self.objects
@@ -355,7 +357,10 @@ class examMod(modObject):
         super().__init__()
 
     def _addInfo(self):
-        pass    def _summarize(self):
+        for i in self.objects:
+            i.update({"concl" : i["category"]})
+
+    def _summarize(self):
         findings = self.objects
 
         # Number of observations
