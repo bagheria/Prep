@@ -56,6 +56,26 @@ class Batch(abc.Collection):
     def process(self):
         for i in self.objects.values():
             i.process()
+
+    def getSummary(self):
+        """Combines all patient summary dataframes
+        Adds patient ID to dataframe
+        """
+        df_list = []
+        for pat_id, pat_obj in self.objects.items():
+            pat_df = pat_obj.getSummary()
+            # Index to varIndex
+            pat_df['patID'] = pat_id
+
+            # add df to list
+            df_list.append(pat_df)
+
+        # Append all dataframes 
+        df = pd.concat(df_list, axis=0, sort=False, ignore_index=True)
+        df.reset_index()
+        return(df)
+
+
 # Test code:
 
 # a = Batch()

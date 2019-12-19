@@ -41,9 +41,7 @@ class modObject(abc.Collection):
     def getSummary(self):
         # Get summary dictionary
         data = self._summarize()
-
-        # serie = pd.Series(data, name=)
-        return(data)
+        return(pd.DataFrame([data]))
 
     def __contains__(self, x):
         """Checks if value x is in instances
@@ -155,7 +153,7 @@ class negMod(modObject):
         ls = set(ls)
 
         # Conflicting values
-        if ls > 1: conflict = True
+        if len(ls) > 1: conflict = True
         else: conflict = False
 
         # conflict = not any(dict[key] > otherDict[key] for key in dict)
@@ -163,7 +161,7 @@ class negMod(modObject):
 
         # isNegated
         if len(ls) == 1:
-            isNegated = ls[0]
+            isNegated = list(ls)[0]
         else: isNegated = None
 
         # return as dictionary
@@ -284,7 +282,7 @@ class dateMod(modObject):
         ls = set(ls)
 
         # Conflicting values
-        if ls > 1: conflict = True
+        if len(ls) > 1: conflict = True
         else: conflict = False
 
         # conflict = not any(dict[key] > otherDict[key] for key in dict)
@@ -292,21 +290,21 @@ class dateMod(modObject):
 
         # min, median and max
         try:
-            min = min(ls)
+            mini = min(ls)
         except ValueError:
-            min = None
+            mini = None
         try:
-            max = max(ls)
+            maxi = max(ls)
         except ValueError:
-            max = None
+            maxi = None
 
         # return as dictionary
         prefix = "date_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
-            f"{prefix}min" : min,
-            f"{prefix}max" : max
+            f"{prefix}min" : mini,
+            f"{prefix}max" : maxi
         })
 
 
@@ -318,6 +316,38 @@ class tempMod(modObject):
     def _addInfo(self):
         pass
 
+    def _summarize(self):
+        findings = self.objects
+
+        # Number of observations
+        n = len(findings)
+
+        # Put main values of findings in a list:
+        ls = []
+        key = "concl"
+        if n > 0:
+            for i in findings:
+                ls.append(i[key])
+        # Transform list into set
+        ls = set(ls)
+
+        # Conflicting values
+        if len(ls) > 1: conflict = True
+        else: conflict = False
+
+        # conflict = not any(dict[key] > otherDict[key] for key in dict)
+        # If less then 2 observations, no conflict possible
+
+        if len(ls) != 1:
+            concl = None
+        else: concl = list(ls)[0] 
+
+        prefix = "date_"
+        return({
+            f"{prefix}n" : n,
+            f"{prefix}conflict" : conflict,
+            f"{prefix}concl" : concl
+        })
 
 # Examination
 class examMod(modObject):
@@ -325,4 +355,35 @@ class examMod(modObject):
         super().__init__()
 
     def _addInfo(self):
-        pass
+        pass    def _summarize(self):
+        findings = self.objects
+
+        # Number of observations
+        n = len(findings)
+
+        # Put main values of findings in a list:
+        ls = []
+        key = "concl"
+        if n > 0:
+            for i in findings:
+                ls.append(i[key])
+        # Transform list into set
+        ls = set(ls)
+
+        # Conflicting values
+        if len(ls) > 1: conflict = True
+        else: conflict = False
+
+        # conflict = not any(dict[key] > otherDict[key] for key in dict)
+        # If less then 2 observations, no conflict possible
+
+        if len(ls) != 1:
+            concl = None
+        else: concl = list(ls)[0] 
+
+        prefix = "date_"
+        return({
+            f"{prefix}n" : n,
+            f"{prefix}conflict" : conflict,
+            f"{prefix}concl" : concl
+        })

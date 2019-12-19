@@ -94,5 +94,27 @@ class patientObj(abc.Collection):
             for varObj in var_ls:
                 var_ls.process()
 
+    def getSummary(self):
+        """Combines all variable finding dataframes
+        into one larger dataframe
+        Appends var
+        """
+        df_list = []
+        for var, var_obj in self.objects.items():
+            var_df = var_obj.getSummary()
+            # Index to varIndex
+            var_df['varIndex'] = var_df.index
+
+            # Insert column with var = key
+            var_df['var'] = var
+
+            # add df to list
+            df_list.append(var_df)
+
+        # Append all dataframes 
+        df = pd.concat(df_list, axis=0, sort=False, ignore_index=True)
+        df.reset_index()
+        return(df)
+
 
 fact = factory.Factory()

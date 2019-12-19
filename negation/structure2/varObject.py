@@ -155,9 +155,34 @@ class varObject(abc.Collection):
 
 
     def getSummary(self):
+        """Combines summary of mods with var findings.
+        Number of rows is number of instances of var found
+        """
+        ls = []
+        for i in self.objects:
+            # Get info of varObject
+            var_dict = i["instance"]
 
-        serie = pd.Series()
-        return(serie)
+            # Get summary info of mods
+            mods_sum_dict = self._getSummaryMods(i["mods"])
+
+            dict_comb = {**var_dict , **mods_sum_dict}
+            ls.append(dict_comb)
+
+        df = pd.DataFrame(ls)
+        return(df)
+
+    def _getSummaryMods(self, mod_dict):
+        """Returns a 1 row df with summary information of one finding's mods
+        """
+        summaries_dict = {}
+        for type, mod_obj in mod_dict.items():
+            summaries_dict.update(mod_obj._summarize())
+        
+        return(summaries_dict)
+        # df = pd.DataFrame.from_dict([summaries_dict], orient="columns")
+        # return(df)
+
 
     # @abstractmethod
     # def _summarize(self):
@@ -168,15 +193,24 @@ class binVar(varObject):
     def __init__(self):
         super().__init__()
 
+    def _summarize(self):
+        pass
+
 # Factorial
 class factVar(varObject):
     def __init__(self):
         super().__init__()
 
+    def _summarize(self):
+        pass
+
 # Numeric
 class numVar(varObject):
     def __init__(self):
         super().__init__()
+
+    def _summarize(self):
+        pass
 
 
 fact = factory.Factory()
