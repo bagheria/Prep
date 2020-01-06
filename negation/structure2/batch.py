@@ -50,7 +50,7 @@ class Batch(abc.Collection):
             df.insert(
                 loc = 0, column="patID", value=id, allow_duplicates = False)
             ls.append(df)
-        df = pd.concat(ls, axis=0)
+        df = pd.concat(ls, axis=0, sort=False)
         return(df)
 
     def process(self):
@@ -64,8 +64,9 @@ class Batch(abc.Collection):
         df_list = []
         for pat_id, pat_obj in self.objects.items():
             pat_df = pat_obj.getSummary()
-            # Index to varIndex
-            pat_df['patID'] = pat_id
+            # add patient id to rows
+            # pat_df['patID'] = pat_id
+            pat_df.insert(0, "patID", pat_id)
 
             # add df to list
             df_list.append(pat_df)
