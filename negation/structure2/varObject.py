@@ -48,7 +48,7 @@ class varObject(abc.Collection):
         self.objects.append({
             "instance" : tagObject, 
             "mods" : fact.createModObject()})
-    
+
     def _addModifiers(self, mods):
         for mod in mods:
             cat = mod["category"]
@@ -69,7 +69,11 @@ class varObject(abc.Collection):
             if not found:
                 raise Exception("categoryString of mod was not recognized")
             
-            
+    def __str__(self):
+        result = []
+        for i in self.objects: 
+            result.append(i["instance"])
+        return(str(result))
 
     def isEmpty(self):
         if self.objects: return False
@@ -79,6 +83,8 @@ class varObject(abc.Collection):
         for i in self.objects:
             if x in i["instance"].values():
                 return(True)
+            # if x[1] == i["instance"][x[0]]:
+            #     return(True)
         return(False)
 
     def __iter__(self):
@@ -113,7 +119,8 @@ class varObject(abc.Collection):
         for index, i in enumerate(self.objects):
             # Per instance, gather var information
             data = i["instance"]
-            var_index = str(self._getType()+str(index))
+            # var_index = str(self._getType()+str(index))
+            var_index = str(i["instance"]["var"]+str(index))
             data.update({"index" : var_index})
             serie = pd.Series(data)
             df_var = pd.DataFrame([serie])
@@ -144,7 +151,7 @@ class varObject(abc.Collection):
                 df_comb = pd.concat([df_mods, df_var], axis=1)
                 ls.append(df_comb)
         # append series to dataframe
-        df = pd.concat(ls, axis=0, ignore_index=True)#.reset_index()
+        df = pd.concat(ls, axis=0, ignore_index=True, sort=False)#.reset_index()
         # Set dict keys as column names instead of row indeces.
         # df = df.transpose()
         return(df)
@@ -281,16 +288,19 @@ class numVar(varObject):
 
 
     def _getSbp(self, phrase):
-        "Returns list again?"
+        "Returns list with value"
         string = re.search(pattern = r"\d{2,3}(?=/(\d{2,3}))", string = phrase)
         if string is None:
             raise Exception(
                 "No value found when searching in phrase of numeric variable",
                 self.phrase)
         else:
-            return(int(string.group()))
+            return([int(string.group())])
 
     def _addInfo(self):
+        """Processes information and adds it to dictionary of instance;
+        self.objects[i]["instance"]
+        """
         for i in self.objects:
             data = i["instance"]
             # Get values
@@ -315,6 +325,7 @@ class numVar(varObject):
                 "values" : values,
                 "isRange" : isRange
             })
+            i["instance"] = data
 
     
 
