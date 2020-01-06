@@ -46,6 +46,12 @@ class patientObj(abc.Collection):
         # key = var, value = varObject
         self.objects = obj_dictionary
 
+    def getVarNames(self):
+        """Returns all variable names
+        """
+        return(self.objects.keys())
+
+
     def _addFindings(self, target, mods):
         """Adds the target and corresponding mod to the 
         var object corresponding to the target's risk variable
@@ -58,7 +64,7 @@ class patientObj(abc.Collection):
         """Checks if patient self has at least one target finding
         in variable x
         """
-        return True if not self.objects[x].isempty() else False
+        return(not self.objects[x].isEmpty())
 
     def __iter__(self):
         """Iterates over self.objects dictionary and returns:
@@ -80,7 +86,7 @@ class patientObj(abc.Collection):
         """
         n = 0
         for varObject in self.objects.values():
-            if not varObject.isempty():
+            if not varObject.isEmpty():
                 n = n + 1
         return(n)
 
