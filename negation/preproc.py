@@ -8,8 +8,12 @@ import unidecode
 def drop_empty(df):
     """Removes rows with empty values from dataframe"""
     new_df = df.dropna(axis=0)
-    print("\nIndexes removed from data because of missing data:\n",
-          set(df.index).symmetric_difference(set(new_df.index)))
+    result = set(df.index).symmetric_difference(set(new_df.index))
+    if len(result) == 0:
+        print("No empty rows found")
+    else:
+        print("\nIndexes removed from data because of missing data:\n",
+            result)
     return(new_df)
 
 
