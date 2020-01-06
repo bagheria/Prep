@@ -36,6 +36,37 @@ context_obj = context.apply_context(
 # %% Create the batch object
 batch1 = createObjects.parse_batch(context_obj, "maggic")
 
+# Process all info
+batch1.process()
+
+# Get summary:
+df = batch1.getSummary()
+print(df)
+utils.export_excel(df, "summary.xlsx")
+
+##
+df = batch1.getDataframe()
+print(df)
+utils.export_excel(df, "overview.xlsx")
+# df_mod = batch1.objects[2].objects["diabetes"].objects[0]["mods"]["date"].getDataframe()
+# print(df_mod)
+
+df_mod = batch1.objects[3].objects["copd"].objects[0]["mods"]["negation"].getDataframe()
+print(df_mod)
+
+
+df_var = batch1.objects[2].objects["diabetes"].getDataframe()
+print(df_var)
+
+df_var = batch1.objects[3].objects["copd"].getDataframe()
+print(df_var)
+
+df_var = batch1.objects[1].objects["current smoker"].getDataframe()
+print(df_var)
+
+df = batch1.objects[4].getDataframe()
+print(df)
+
 batch1
 
 # %%
