@@ -344,7 +344,7 @@ class tempMod(modObject):
             concl = None
         else: concl = list(ls)[0] 
 
-        prefix = "date_"
+        prefix = "temp_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
@@ -386,7 +386,7 @@ class examMod(modObject):
             concl = None
         else: concl = list(ls)[0] 
 
-        prefix = "date_"
+        prefix = "exam_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
