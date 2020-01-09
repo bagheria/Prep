@@ -3,7 +3,7 @@ from negation.structure2 import batch, constants, factory, modObject, patientObj
 # Object to instantiate other objects:
 fact = factory.Factory()
 
-def convert_tagObject(tagObject, mode):
+def convert_tagObject(tagObject, text, mode):
     """Converts input tagObject into a dictionary with relevant information
     in dictionary structure.
     For mode, 'target', or 'modifier' has te be specified.
@@ -12,7 +12,10 @@ def convert_tagObject(tagObject, mode):
         result = {
             "var" : tagObject.categoryString(),
             "subtype" : tagObject.getLiteral(),
-            "phrase" : tagObject.getPhrase()
+            "phrase" : tagObject.getPhrase(),
+            "span" : tagObject.getSpan(),
+            "scope" : tagObject.getScope(),
+            "sentence" : text
         }
 
 
@@ -20,15 +23,17 @@ def convert_tagObject(tagObject, mode):
         result = {
             "category" : tagObject.categoryString(),
             "term" : tagObject.getLiteral(),
-            "phrase" : tagObject.getPhrase()
+            "phrase" : tagObject.getPhrase(),
+            "span" : tagObject.getSpan(),
+            "scope" : tagObject.getScope()
         }
 
     else:
         raise Exception(
             "No valid Mode is selected",
             "Choose either 'target', or 'modifier'.",
-            "Current mode set:",
-            mode)
+            "Current mode set:", mode,
+            "text:", text)
 
     return(result)
 
@@ -62,17 +67,19 @@ def parse_object(context_doc, patient_obj):
     for sent_markup in section_markups:
         # print(sent_markup[1])
         targets = sent_markup[1].getMarkedTargets()
+        # Sentence of these targets
+        text = sent_markup[1].getText()
         for target in targets:
             # obtain mods for this target:
             mods = get_target_mods(target, sent_markup)
 
             # Convert targetTagObject to dictionary with relevant information
-            target = convert_tagObject(target, mode='target')
+            target = convert_tagObject(target, text, mode='target')
             
             # Same for modifier tagObjects:
             new_mods = []
             for index, mod in enumerate(mods):
-                new_mods.append(convert_tagObject(mod, mode='modifier'))
+                new_mods.append(convert_tagObject(mod, text, mode='modifier'))
             
             # add targets and corresponding mod to patientObj
             patient_obj._addFindings(target, new_mods)
