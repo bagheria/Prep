@@ -51,6 +51,15 @@ class Batch(abc.Collection):
                 loc = 0, column="patID", value=id, allow_duplicates = False)
             ls.append(df)
         df = pd.concat(ls, axis=0, sort=False)
+
+        # identify column types:
+        all_cols = df.columns.values
+        mod_cols = [col for col in all_cols if "mod" in col]
+        other_cols = [col for col in all_cols if "mod" not in col]
+
+        # change column order:
+        df = df.reindex(columns=other_cols + mod_cols)
+
         return(df)
 
     def process(self):
