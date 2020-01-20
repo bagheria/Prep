@@ -174,12 +174,21 @@ class negMod(modObject):
                 "Number of negation findings", n,
                 "Negation findings:", findings)
 
+        lsPhrases = []
+        lsScores = []
+        if n > 0:
+            for i in findings:
+                lsPhrases.append(i["phrase"])
+                lsScores.append(i["score"])
+
         # return as dictionary
         prefix = "neg_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
-            f"{prefix}isNegated" : isNegated
+            f"{prefix}isNegated" : isNegated,
+            f"{prefix}lsPhrases" : lsPhrases,
+            f"{prefix}lsScores" : lsScores
         })
 
 
@@ -308,13 +317,23 @@ class dateMod(modObject):
         except ValueError:
             maxi = None
 
+        # lists:
+        lsPhrases = []
+        lsYears = []
+        if n > 0:
+            for i in findings:
+                lsPhrases.append(i["phrase"])
+                lsYears.append(i["year"])
+
         # return as dictionary
         prefix = "date_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
             f"{prefix}min" : mini,
-            f"{prefix}max" : maxi
+            f"{prefix}max" : maxi,
+            f"{prefix}lsPhrases" : lsPhrases,
+            f"{prefix}lsYears" : lsYears
         })
 
 
@@ -354,11 +373,21 @@ class tempMod(modObject):
             concl = None
         else: concl = list(ls)[0] 
 
+        # lists:
+        lsPhrases = []
+        lsConcls = []
+        if n > 0:
+            for i in findings:
+                lsPhrases.append(i["phrase"])
+                lsConcls.append(i["concl"])
+
         prefix = "temp_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
-            f"{prefix}concl" : concl
+            f"{prefix}concl" : concl,
+            f"{prefix}lsPhrases" : lsPhrases,
+            f"{prefix}lsConcls" : lsConcls
         })
 
 # Examination
@@ -396,9 +425,19 @@ class examMod(modObject):
             concl = None
         else: concl = list(ls)[0] 
 
+        # lists:
+        lsPhrases = []
+        lsConcls = []
+        if n > 0:
+            for i in findings:
+                lsPhrases.append(i["phrase"])
+                lsConcls.append(i["concl"])
+
         prefix = "exam_"
         return({
             f"{prefix}n" : n,
             f"{prefix}conflict" : conflict,
-            f"{prefix}concl" : concl
+            f"{prefix}concl" : concl,
+            f"{prefix}lsPhrases" : lsPhrases,
+            f"{prefix}lsConcls" : lsConcls
         })
