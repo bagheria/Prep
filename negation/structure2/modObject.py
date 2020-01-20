@@ -89,9 +89,9 @@ class modObject(abc.Collection):
     #     #     result = func(x)
     #     #     instance.update({outp_key : x})
     
-    # @abstractmethod
-    # def _summarize(self):
-    #     pass
+    @abstractmethod
+    def _summarize(self):
+        pass
 
 
 # Negation
