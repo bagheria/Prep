@@ -98,13 +98,13 @@ class patientObj(abc.Collection):
             #     loc = 0, column="colname", value=id, allow_duplicates = False)
             ls.append(df)
         df = pd.concat(ls, axis=0, ignore_index=True, sort=False).reset_index()
+
         return(df)
 
 
     def process(self):
-        for var_ls in self.objects.values():
-            for varObj in var_ls:
-                var_ls.process()
+        for var, varObj in self:
+            varObj.process()
 
     def getSummary(self):
         """Combines all variable finding dataframes
