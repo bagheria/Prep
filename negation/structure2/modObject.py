@@ -160,9 +160,19 @@ class negMod(modObject):
         # If less then 2 observations, no conflict possible
 
         # isNegated
+        # In case of 1 type of conlusion:
         if len(ls) == 1:
             isNegated = list(ls)[0]
-        else: isNegated = None
+        # If no negation mod found:
+        elif n == 0:
+            isNegated = False
+        elif conflict == True: 
+            isNegated = None
+        else:
+            raise Execption(
+                "Don't know which isNegated to conclude",
+                "Number of negation findings", n,
+                "Negation findings:", findings)
 
         # return as dictionary
         prefix = "neg_"
