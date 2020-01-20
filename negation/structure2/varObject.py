@@ -226,6 +226,39 @@ class binVar(varObject):
         """
         pass
 
+    def _summarize(self):
+        """Processes summary information for this varObject"""
+        findings = []
+        negs = []
+        # findings = [find for find, mod_dict in self]
+        for find, mod_dict in self:
+            findings.append(find)
+            negs.append(mod_dict["negation"])
+
+        # Number of observations
+        n = len(findings)
+
+        # Handle conflicts between vars which are negated or not negated
+        neg_set = set([i["isNegated"] for i in negs])
+        if len(neg_set) == 0:
+            isNegated = False
+            negConflict = False
+        elif len(neg_set) > 1:
+            isNegated = None
+            negConflict = True
+        elif len(neg_set) == 1:
+            isNegated = list(neg_set)[0]
+            negConflict = False
+        else:
+            raise Exception()
+
+        # return as dictionary
+        prefix = "var_"
+        return({
+            f"{prefix}n" : n,
+            f"{prefix}conflict" : conflict,
+            f"{prefix}isNegated" : isNegated
+        })
 
 # Factorial
 class factVar(varObject):
