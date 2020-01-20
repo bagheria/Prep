@@ -88,10 +88,13 @@ class varObject(abc.Collection):
         return(False)
 
     def __iter__(self):
-        """Iterates over self.objects dictionary and returns:
+        """Iterates over self.objects list and returns:
         (var, varObject)
         """
-        yield from self.objects
+        for i in self.objects:
+            yield (i["instance"], i["mods"])
+
+
 
     # def __next__(self):
     #     if self._n <= len(self.objects):
