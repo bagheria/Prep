@@ -113,9 +113,18 @@ class patientObj(abc.Collection):
         """
         df_list = []
         for var, var_obj in self.objects.items():
-            var_df = var_obj.getSummary()
-            # Index to varIndex
-            var_df['varIndex'] = var_df.index
+            # Check if var has findings:
+            if var_obj.isEmpty():
+                var_df = var_obj.getSummary()
+
+                # add info that is not found:
+                var_df = pd.DataFrame(data=[False], columns=["isFound"])
+                var_df['varIndex'] = 0
+            else:
+                var_df = var_obj.getSummary()
+                var_df['isFound'] = True
+                # Index to varIndex
+                var_df['varIndex'] = var_df.index
 
             # Insert column with var = key
             var_df['var'] = var
