@@ -83,6 +83,15 @@ class Batch(abc.Collection):
         # Append all dataframes 
         df = pd.concat(df_list, axis=0, sort=False, ignore_index=True)
         df.reset_index()
+
+        # identify column types:
+        all_cols = df.columns.values
+        mod_cols = [col for col in all_cols if "_" in col]
+        other_cols = [col for col in all_cols if "_" not in col]
+
+        # change column order:
+        df = df.reindex(columns=other_cols + mod_cols)
+
         return(df)
 
 
