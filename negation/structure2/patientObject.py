@@ -129,6 +129,16 @@ class patientObj(abc.Collection):
             # Insert column with var = key
             var_df['var'] = var
 
+            # Determine varType:
+            var_type_str = str(type(var_obj))
+            if "varObject.numVar" in var_type_str:
+                var_type = "numeric"
+            elif "varObject.binVar" in var_type_str:
+                var_type = "binary"
+            elif "varObject.factVar" in var_type_str:
+                var_type = "factorial"
+            var_df['varType'] = var_type
+
             # add df to list
             df_list.append(var_df)
 
