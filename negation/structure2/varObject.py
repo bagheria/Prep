@@ -136,6 +136,7 @@ class varObject(abc.Collection):
             if n_mod_comb == 0:
                 ls.append(df_var)
 
+            # Paste mod info to dataframe as new columns
             else:
                 # Gather all modifier information 
                 df_mods = []
@@ -150,13 +151,18 @@ class varObject(abc.Collection):
                 if len(df_mods) == 0:
                     raise Exception(
                         "df_mod contains no rows")
+                # Multiply rows of vars to match number of mods
                 df_var = pd.concat([df_var]*n_mod_comb, ignore_index=True)
+                # Combine var columns with mod columns
                 df_comb = pd.concat([df_mods, df_var], axis=1)
+                # Add var df to list
                 ls.append(df_comb)
-        # append series to dataframe
+
+        # concatenate rows of dataframes into 1 dataframe
         df = pd.concat(ls, axis=0, ignore_index=True, sort=False)#.reset_index()
         # Set dict keys as column names instead of row indeces.
         # df = df.transpose()
+
         return(df)
 
     def process(self):
