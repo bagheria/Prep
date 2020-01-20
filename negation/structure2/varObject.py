@@ -266,7 +266,27 @@ class factVar(varObject):
         super().__init__()
 
     def _summarize(self):
-        pass
+        """Process information about the findings for this var
+        """
+        # Prep data
+        findings = []
+        negs = []
+        # findings = [find for find, mod_dict in self]
+        for find, mod_dict in self:
+            findings.append(find)
+            negs.append(mod_dict["negation"])
+
+        # Number of observations
+        n = len(findings)
+
+        # Factors
+        factor_set = set([val["factor"] for val in findings])
+
+        # Mods:
+        # Negation
+        neg_set = set([i["isNegated"] for i in negs])
+
+
 
     def _addInfo(self):
         """ Processes subtype into factor and corresponding integer
